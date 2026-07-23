@@ -1,0 +1,1792 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta http-equiv="X-Frame-Options" content="DENY">
+<meta name="referrer" content="no-referrer">
+<title>Condomínio Bella Vista — Cadastro</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --blue:#1a6fc4;--blue-d:#0f4a8a;--blue-l:#e8f1fb;
+  --green:#1a7a4a;--green-l:#e6f4ed;
+  --red:#c0392b;--red-l:#fdecea;
+  --amber:#92510a;--amber-l:#fef3e2;
+  --gray-0:#fff;--gray-1:#f7f8fa;--gray-2:#eef0f3;
+  --gray-3:#dde0e6;--gray-6:#6b7280;--gray-8:#1e2533;
+  --radius:12px;
+  --font:'Segoe UI',system-ui,-apple-system,BlinkMacSystemFont,sans-serif;
+  --text-base:16px;
+  --text-sm:14px;
+  --text-xs:12px;
+  --text-lg:18px;
+  --text-xl:22px;
+}
+html{font-size:16px;-webkit-text-size-adjust:100%}
+body{font-family:var(--font);background:var(--gray-1);color:var(--gray-8);min-height:100vh;line-height:1.5;-webkit-font-smoothing:antialiased}
+
+/* HEADER */
+.app-header{background:var(--blue);padding:14px 16px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:10;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+.app-header svg{flex-shrink:0;width:32px;height:32px}
+.app-header-text{flex:1}
+.app-header-text h1{font-size:17px;font-weight:700;color:#fff;letter-spacing:-.01em}
+.app-header-text p{font-size:13px;color:rgba(255,255,255,.85);margin-top:1px}
+.progress-wrap{background:rgba(255,255,255,.25);height:3px;margin-top:10px;border-radius:2px}
+.progress-bar{height:100%;background:#fff;border-radius:2px;transition:width .3s}
+
+/* SCREENS */
+.screen{display:none;padding:18px 16px;max-width:520px;margin:0 auto}
+.screen.active{display:block}
+
+/* HOME BUTTONS */
+.home-btns{display:flex;flex-direction:column;gap:12px;margin-top:8px}
+.home-btn{display:flex;align-items:center;gap:14px;padding:18px 16px;border-radius:var(--radius);border:1.5px solid var(--gray-3);background:var(--gray-0);cursor:pointer;-webkit-tap-highlight-color:transparent;text-align:left;transition:transform .1s,box-shadow .1s}
+.home-btn:active{transform:scale(.98)}
+.home-btn.primary{background:var(--blue);border-color:var(--blue);box-shadow:0 4px 12px rgba(26,111,196,.3)}
+.home-btn.primary .hb-title{color:#fff;font-size:16px}
+.home-btn.primary .hb-desc{color:rgba(255,255,255,.8)}
+.home-btn.primary .hb-icon{background:rgba(255,255,255,.2)}
+.hb-icon{width:48px;height:48px;border-radius:var(--radius);background:var(--blue-l);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:24px}
+.hb-title{font-size:15px;font-weight:700;color:var(--gray-8);line-height:1.3}
+.hb-desc{font-size:13px;color:var(--gray-6);margin-top:3px}
+
+/* TIPO SELECTOR */
+.tipo-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px}
+.tipo-card{background:var(--gray-0);border:2px solid var(--gray-3);border-radius:var(--radius);padding:18px 12px;text-align:center;cursor:pointer;transition:all .15s;-webkit-tap-highlight-color:transparent}
+.tipo-card:active{transform:scale(.97)}
+.tipo-card.selected{border-color:var(--blue);background:var(--blue-l)}
+.tipo-card .tipo-icon{font-size:30px;margin-bottom:8px}
+.tipo-card .tipo-label{font-size:14px;font-weight:700;color:var(--gray-8)}
+.tipo-card .tipo-desc{font-size:12px;color:var(--gray-6);margin-top:3px}
+.tipo-card.selected .tipo-label{color:var(--blue-d)}
+
+/* SECTIONS */
+.section-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--blue);margin:20px 0 10px}
+.section-title:first-child{margin-top:4px}
+
+/* FIELDS */
+.field{margin-bottom:16px}
+.field label{display:block;font-size:14px;font-weight:600;color:var(--gray-8);margin-bottom:6px}
+.field label .req{color:var(--red);margin-left:2px}
+.field input,.field select,.field textarea{
+  width:100%;padding:13px 14px;border:1.5px solid var(--gray-3);border-radius:var(--radius);
+  font-size:16px;font-family:var(--font);color:var(--gray-8);background:var(--gray-0);
+  -webkit-appearance:none;appearance:none;transition:border-color .15s;line-height:1.4
+}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(26,111,196,.12)}
+.field textarea{resize:vertical;min-height:88px}
+.field-hint{font-size:12px;color:var(--gray-6);margin-top:5px;line-height:1.4}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+/* RADIO / CHECK */
+.radio-group,.check-group{display:flex;flex-direction:column;gap:10px}
+.radio-opt,.check-opt{display:flex;align-items:center;gap:12px;padding:14px;border:1.5px solid var(--gray-3);border-radius:var(--radius);cursor:pointer;background:var(--gray-0);-webkit-tap-highlight-color:transparent;transition:all .15s}
+.radio-opt.selected,.check-opt.selected{border-color:var(--blue);background:var(--blue-l)}
+.radio-opt input,.check-opt input{accent-color:var(--blue);width:20px;height:20px;flex-shrink:0}
+.radio-opt span,.check-opt span{font-size:15px;font-weight:500;color:var(--gray-8);line-height:1.4}
+
+/* TERMO */
+.termo-box{background:var(--gray-1);border:1.5px solid var(--gray-3);border-radius:var(--radius);padding:14px;font-size:14px;color:var(--gray-6);line-height:1.7;max-height:160px;overflow-y:auto;margin-bottom:12px}
+
+/* ITEM BLOCKS */
+.item-block{background:var(--gray-1);border:1.5px solid var(--gray-3);border-radius:var(--radius);padding:14px;margin-bottom:10px}
+.item-block-title{font-size:13px;font-weight:700;color:var(--gray-6);margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
+.remove-btn{background:var(--red-l);color:var(--red);border:none;border-radius:8px;padding:4px 10px;font-size:12px;cursor:pointer;font-weight:600}
+.add-more{display:flex;align-items:center;justify-content:center;gap:6px;padding:13px;background:var(--gray-0);border:1.5px dashed var(--blue);border-radius:var(--radius);color:var(--blue);font-size:14px;font-weight:700;cursor:pointer;width:100%;-webkit-tap-highlight-color:transparent}
+.add-more:active{background:var(--blue-l)}
+.vtitle{font-size:13px;font-weight:700;color:var(--gray-6);margin-bottom:10px}
+
+/* BOTÕES */
+.btn-row{display:flex;gap:10px;margin-top:20px;padding-bottom:28px}
+.btn-primary{flex:1;padding:15px;background:var(--blue);color:#fff;border:none;border-radius:var(--radius);font-size:16px;font-weight:700;cursor:pointer;-webkit-tap-highlight-color:transparent;letter-spacing:.01em;transition:background .15s}
+.btn-primary:active{background:var(--blue-d)}
+.btn-primary:disabled{background:var(--gray-3);color:var(--gray-6)}
+.btn-secondary{flex:1;padding:15px;background:var(--gray-0);color:var(--gray-8);border:1.5px solid var(--gray-3);border-radius:var(--radius);font-size:15px;font-weight:500;cursor:pointer;transition:background .15s}
+.btn-secondary:active{background:var(--gray-2)}
+
+/* INFO BOX */
+.info-box{display:flex;gap:10px;background:var(--blue-l);border:1.5px solid #b5d4f4;border-radius:var(--radius);padding:13px;font-size:14px;color:#0c447c;line-height:1.5;margin-bottom:16px}
+.info-box svg{flex-shrink:0;margin-top:2px}
+
+/* STEP INDICATOR */
+.step-indicator{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.step-indicator .step-text{font-size:13px;color:var(--gray-6);font-weight:500}
+.step-indicator .step-pct{font-size:13px;font-weight:700;color:var(--blue)}
+
+/* SUCCESS */
+.success-wrap{text-align:center;padding:36px 0 52px}
+.success-icon{width:76px;height:76px;background:var(--green-l);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 18px}
+.success-icon svg{width:38px;height:38px;stroke:#1a7a4a;fill:none;stroke-width:2.5;stroke-linecap:round}
+.success-title{font-size:22px;font-weight:800;margin-bottom:8px;color:var(--gray-8)}
+.success-desc{font-size:15px;color:var(--gray-6);line-height:1.6}
+.success-card{background:var(--gray-0);border:1.5px solid var(--gray-3);border-radius:var(--radius);padding:16px;margin:20px 0;text-align:left}
+.success-card .sc-row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--gray-2);font-size:14px}
+.success-card .sc-row:last-child{border:none}
+.success-card .sc-key{color:var(--gray-6)}
+.success-card .sc-val{font-weight:600;color:var(--gray-8)}
+
+/* LOGIN MORADOR */
+.pin-wrap{display:flex;gap:10px;justify-content:center;margin:20px 0}
+.pin-digit{width:50px;height:60px;border:2px solid var(--gray-3);border-radius:var(--radius);font-size:26px;font-weight:800;text-align:center;font-family:var(--font);color:var(--gray-8);-webkit-appearance:none;transition:border-color .15s}
+.pin-digit:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(26,111,196,.12)}
+
+/* DASHBOARD MORADOR */
+.morador-header{background:var(--blue);padding:18px 16px;color:#fff;margin:-18px -16px 18px;box-shadow:0 2px 8px rgba(0,0,0,.12)}
+.morador-header h2{font-size:20px;font-weight:800;letter-spacing:-.01em}
+.morador-header p{font-size:14px;opacity:.85;margin-top:4px}
+.morador-tabs{display:flex;gap:6px;overflow-x:auto;margin-bottom:18px;-webkit-overflow-scrolling:touch;padding-bottom:2px}
+.morador-tabs::-webkit-scrollbar{display:none}
+.morador-tab{flex-shrink:0;padding:9px 16px;border-radius:99px;font-size:14px;font-weight:600;color:var(--gray-6);border:1.5px solid var(--gray-3);background:var(--gray-0);cursor:pointer;-webkit-tap-highlight-color:transparent;transition:all .15s}
+.morador-tab.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+.item-card{background:var(--gray-0);border:1.5px solid var(--gray-3);border-radius:var(--radius);padding:14px;margin-bottom:10px}
+.item-card-title{font-size:15px;font-weight:700;color:var(--gray-8);margin-bottom:5px;display:flex;justify-content:space-between;align-items:center}
+.item-card-sub{font-size:13px;color:var(--gray-6);line-height:1.5}
+.item-card-actions{display:flex;gap:8px;margin-top:12px}
+.btn-edit-item{flex:1;padding:10px;background:var(--blue-l);color:var(--blue);border:1.5px solid var(--blue);border-radius:var(--radius);font-size:13px;font-weight:700;cursor:pointer}
+.btn-del-item{padding:10px 14px;background:var(--red-l);color:var(--red);border:1.5px solid var(--red);border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer}
+.add-card{display:flex;align-items:center;justify-content:center;gap:8px;padding:15px;border:1.5px dashed var(--blue);border-radius:var(--radius);color:var(--blue);font-size:15px;font-weight:700;cursor:pointer;background:var(--blue-l);margin-bottom:16px;-webkit-tap-highlight-color:transparent}
+.minha-info-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--gray-2);font-size:14px;gap:12px}
+.minha-info-row:last-child{border:none}
+.minha-info-key{color:var(--gray-6);flex-shrink:0}
+.minha-info-val{font-weight:600;color:var(--gray-8);text-align:right;word-break:break-word}
+
+/* RESERVAS */
+.salao-tabs{display:flex;gap:10px;margin-bottom:16px}
+.salao-tab{flex:1;padding:12px;border-radius:var(--radius);border:1.5px solid var(--gray-3);background:var(--gray-0);font-size:14px;font-weight:700;color:var(--gray-6);cursor:pointer;text-align:center;-webkit-tap-highlight-color:transparent;transition:all .15s}
+.salao-tab.active{background:var(--blue);color:#fff;border-color:var(--blue);box-shadow:0 3px 10px rgba(26,111,196,.25)}
+.calendario-wrap{background:var(--gray-0);border:1.5px solid var(--gray-3);border-radius:var(--radius);padding:16px;margin-bottom:14px}
+.cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.cal-titulo{font-size:16px;font-weight:700;color:var(--gray-8)}
+.cal-nav{background:var(--gray-1);border:1.5px solid var(--gray-3);border-radius:var(--radius);padding:8px 14px;cursor:pointer;font-size:15px;font-weight:600;color:var(--gray-8)}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.cal-dia-nome{font-size:11px;font-weight:700;color:var(--gray-6);text-align:center;padding:4px 0;letter-spacing:.03em}
+.cal-dia{height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;cursor:pointer;transition:background .15s;-webkit-tap-highlight-color:transparent}
+.cal-dia.vazio{cursor:default}
+.cal-dia.passado{color:var(--gray-3);cursor:not-allowed;font-weight:400}
+.cal-dia.ocupado{background:var(--red-l);color:var(--red);cursor:not-allowed;font-weight:700}
+.cal-dia.disponivel:hover{background:var(--blue-l);color:var(--blue)}
+.cal-dia.selecionado{background:var(--blue);color:#fff;font-weight:700;box-shadow:0 2px 6px rgba(26,111,196,.3)}
+.cal-dia.hoje{border:2px solid var(--blue);color:var(--blue);font-weight:700}
+.legenda-cal{display:flex;gap:14px;margin-top:12px;flex-wrap:wrap}
+.legenda-item{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--gray-6);font-weight:500}
+.legenda-dot{width:13px;height:13px;border-radius:4px}
+.reserva-card{background:var(--gray-0);border:1.5px solid var(--gray-3);border-radius:var(--radius);padding:14px;margin-bottom:10px}
+.reserva-card.confirmado{border-left:4px solid var(--green)}
+.reserva-card.cancelado{border-left:4px solid var(--red);opacity:.6}
+.reserva-card-title{font-size:15px;font-weight:700;color:var(--gray-8)}
+.reserva-card-sub{font-size:13px;color:var(--gray-6);margin-top:4px;line-height:1.5}
+.reserva-card-taxa{display:inline-block;margin-top:8px;padding:4px 12px;border-radius:99px;font-size:12px;font-weight:700}
+.taxa-gratis{background:var(--green-l);color:var(--green)}
+.taxa-paga{background:var(--amber-l);color:var(--amber)}
+.taxa-cancel{background:var(--red-l);color:var(--red)}
+
+/* EDIT FORM */
+.edit-form{display:none;padding:14px;border-top:1px solid var(--gray-2);background:var(--gray-1);border-radius:0 0 var(--radius) var(--radius)}
+.edit-form.open{display:block}
+.edit-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+.edit-field{display:flex;flex-direction:column;gap:5px}
+.edit-field label{font-size:12px;font-weight:700;color:var(--gray-6);text-transform:uppercase;letter-spacing:.05em}
+.edit-field input,.edit-field select{padding:10px 12px;border:1.5px solid var(--gray-3);border-radius:var(--radius);font-size:15px;font-family:var(--font);background:var(--gray-0);-webkit-appearance:none}
+.edit-field input:focus,.edit-field select:focus{outline:none;border-color:var(--blue)}
+.edit-field.full{grid-column:1/-1}
+.edit-actions{display:flex;gap:8px}
+.btn-salvar{flex:1;padding:12px;background:var(--blue);color:#fff;border:none;border-radius:var(--radius);font-size:15px;font-weight:700;cursor:pointer}
+.btn-cancelar-edit{flex:1;padding:12px;background:var(--gray-0);color:var(--gray-8);border:1.5px solid var(--gray-3);border-radius:var(--radius);font-size:15px;cursor:pointer}
+
+/* LOADING */
+.loading-overlay{display:none;position:fixed;inset:0;background:rgba(255,255,255,.88);z-index:100;align-items:center;justify-content:center;flex-direction:column;gap:16px}
+.loading-overlay.show{display:flex}
+.spinner{width:42px;height:42px;border:4px solid var(--gray-3);border-top-color:var(--blue);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-size:15px;color:var(--gray-6);font-weight:500}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--gray-8);color:#fff;padding:12px 22px;border-radius:99px;font-size:14px;font-weight:500;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap;z-index:200;box-shadow:0 4px 16px rgba(0,0,0,.2)}
+.toast.show{opacity:1}
+
+/* RESPONSIVO */
+@media(max-width:400px){
+  .tipo-grid{grid-template-columns:1fr 1fr}
+  .field-row{grid-template-columns:1fr}
+  .edit-grid{grid-template-columns:1fr}
+  .pin-digit{width:44px;height:54px;font-size:22px}
+  .cal-dia{height:36px;font-size:13px}
+  .screen{padding:14px 12px}
+  .btn-primary,.btn-secondary{font-size:15px;padding:14px}
+  .field input,.field select,.field textarea{font-size:15px}
+}
+@media(min-width:600px){
+  .screen{padding:24px 20px}
+  .tipo-grid{grid-template-columns:repeat(4,1fr)}
+  .morador-header{padding:22px 20px;margin:-24px -20px 20px}
+}
+</style>
+</head>
+<body>
+
+<div class="app-header">
+  <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+    <rect width="32" height="32" rx="8" fill="rgba(255,255,255,0.15)"/>
+    <path d="M6 13l10-8 10 8v13a1 1 0 01-1 1H7a1 1 0 01-1-1z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <polyline points="13,26 13,18 19,18 19,26" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+  <div class="app-header-text" style="flex:1">
+    <h1>Condomínio Bella Vista</h1>
+    <p id="header-sub">Sistema de cadastro de acesso</p>
+    <p style="font-size:10px;color:rgba(255,255,255,.5);margin-top:1px">v2.35</p>
+    <div class="progress-wrap"><div class="progress-bar" id="progress-bar" style="width:0%"></div></div>
+  </div>
+</div>
+
+<!-- LOADING -->
+<div class="loading-overlay" id="loading">
+  <div class="spinner"></div>
+  <div class="loading-text">Enviando cadastro...</div>
+</div>
+<div class="toast" id="toast"></div>
+
+<!-- ============================================================ -->
+<!-- TELA 0: BOAS VINDAS + TIPO -->
+<!-- ============================================================ -->
+<div class="screen active" id="screen-0">
+  <div style="text-align:center;padding:8px 0 20px">
+    <div style="font-size:48px;margin-bottom:12px">🏢</div>
+    <h2 style="font-size:22px;font-weight:800;color:var(--gray-8);line-height:1.3">Condomínio Bella Vista</h2>
+    <p style="font-size:15px;color:var(--gray-6);margin-top:6px;line-height:1.5">Sistema de controle de acesso</p>
+  </div>
+
+  <div class="info-box" style="margin-bottom:20px">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    <span style="font-size:14px">Seus dados são protegidos e acessíveis somente pela administração do condomínio, conforme a LGPD.</span>
+  </div>
+
+  <p style="font-size:16px;font-weight:700;color:var(--gray-8);margin-bottom:14px;text-align:center">O que deseja fazer?</p>
+
+  <div class="home-btns">
+    <div class="home-btn primary" onclick="showScreen('screen-novo-cadastro')">
+      <div class="hb-icon">📋</div>
+      <div>
+        <div class="hb-title" style="font-size:17px">Fazer meu cadastro</div>
+        <div class="hb-desc" style="font-size:14px;margin-top:4px">Ainda não tenho senha de acesso ao condomínio</div>
+      </div>
+    </div>
+    <div class="home-btn" onclick="showScreen('screen-login-morador')">
+      <div class="hb-icon">🔑</div>
+      <div>
+        <div class="hb-title" style="font-size:17px">Acessar minha área</div>
+        <div class="hb-desc" style="font-size:14px;margin-top:4px">Já tenho senha — atualizar meus dados ou fazer reserva</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TELA NOVO CADASTRO -->
+<div class="screen" id="screen-novo-cadastro">
+  <button onclick="showScreen('screen-0')" style="display:flex;align-items:center;gap:6px;background:none;border:none;color:var(--blue);font-size:14px;font-weight:600;cursor:pointer;margin-bottom:16px;padding:0">
+    ← Voltar ao início
+  </button>
+  <div class="info-box" style="margin-bottom:20px">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    <span style="font-size:14px">Seus dados são protegidos conforme a Lei Geral de Proteção de Dados (LGPD — Lei 13.709/2018).</span>
+  </div>
+  <p style="font-size:18px;font-weight:800;color:var(--gray-8);margin-bottom:6px">Qual é o seu vínculo com o condomínio?</p>
+  <p style="font-size:14px;color:var(--gray-6);margin-bottom:16px">Selecione uma das opções abaixo para iniciar seu cadastro.</p>
+  <!-- Linha 1: Proprietários lado a lado -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+    <div class="tipo-card" onclick="selectTipo('proprietario',this)">
+      <div class="tipo-icon">🏠</div>
+      <div class="tipo-label">Proprietário</div>
+      <div class="tipo-desc" style="font-size:12px;margin-top:4px;line-height:1.3">Morador<br>no apartamento</div>
+    </div>
+    <div class="tipo-card" onclick="selectTipo('prop_nao_morador',this)">
+      <div class="tipo-icon">🏘️</div>
+      <div class="tipo-label">Proprietário</div>
+      <div class="tipo-desc" style="font-size:12px;margin-top:4px;line-height:1.3">Não morador<br>(locador)</div>
+    </div>
+  </div>
+  <!-- Linha 2: Inquilino, Dependente, Prestador -->
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
+    <div class="tipo-card" onclick="selectTipo('inquilino',this)">
+      <div class="tipo-icon">🔑</div>
+      <div class="tipo-label" style="font-size:13px">Inquilino</div>
+      <div class="tipo-desc" style="font-size:11px;margin-top:3px">Locatário</div>
+    </div>
+    <div class="tipo-card" onclick="selectTipo('dependente',this)">
+      <div class="tipo-icon">👨‍👩‍👧</div>
+      <div class="tipo-label" style="font-size:13px">Dependente</div>
+      <div class="tipo-desc" style="font-size:11px;margin-top:3px">Familiar</div>
+    </div>
+    <div class="tipo-card" onclick="selectTipo('prestador',this)">
+      <div class="tipo-icon">🧹</div>
+      <div class="tipo-label" style="font-size:13px">Prestador</div>
+      <div class="tipo-desc" style="font-size:11px;margin-top:3px">Diarista etc.</div>
+    </div>
+  </div>
+  <div class="btn-row">
+    <button class="btn-primary" id="btn-tipo" onclick="irParaFormulario()" disabled>Continuar →</button>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- TELA 1: PROPRIETÁRIO -->
+<!-- ============================================================ -->
+<div class="screen" id="screen-prop">
+  <div class="step-indicator"><span class="step-text" id="prop-step-txt">Etapa 1 de 4</span><span class="step-pct" id="prop-pct">25%</span></div>
+
+  <!-- ETAPA 1: Termo -->
+  <div id="prop-e1">
+    <div class="section-title">Termo de ciência</div>
+    <div class="termo-box">
+<strong>TERMO DE CIÊNCIA, CONSENTIMENTO E PROTEÇÃO DE DADOS PESSOAIS</strong><br>
+<strong>Condomínio Bella Vista</strong><br><br>
+<strong>1. Finalidade do tratamento de dados</strong><br>
+Os dados pessoais coletados (nome, data de nascimento, CPF, telefone e e-mail) são utilizados exclusivamente para identificação e controle de acesso às dependências do Condomínio Bella Vista, em conformidade com o art. 7º, inciso IX da Lei Federal nº 13.709/2018 — LGPD.<br><br>
+<strong>2. Responsável pelo tratamento</strong><br>
+O controlador dos dados é a Administração do Condomínio Bella Vista, que se compromete a tratar as informações com sigilo e segurança, vedado o compartilhamento com terceiros sem autorização expressa do titular.<br><br>
+<strong>3. Senhas de acesso pessoal</strong><br>
+A senha gerada é pessoal, intransferível e de uso exclusivo do titular. É expressamente proibido o repasse a qualquer outra pessoa. O titular responderá civil e administrativamente por danos decorrentes do compartilhamento indevido, nos termos do art. 927 do Código Civil.<br><br>
+<strong>4. Direitos do titular</strong><br>
+Nos termos dos arts. 17 a 22 da LGPD, você tem direito a acessar, corrigir ou solicitar a exclusão de seus dados a qualquer momento pelo e-mail: condominiobellavistasbs@gmail.com.<br><br>
+<strong>5. Prazo de retenção</strong><br>
+Os dados serão mantidos enquanto perdurar o vínculo do titular com o Condomínio Bella Vista e pelo prazo legal aplicável após o encerramento deste vínculo.<br><br>
+<strong>6. Disponibilização da senha</strong><br>
+A senha de acesso somente será disponibilizada após o recebimento formal deste aceite pela administração do condomínio.
+</div>
+    <label class="check-opt" id="prop-termo-lbl">
+      <input type="checkbox" id="prop-termo" onchange="toggleCheck(this,'prop-termo-lbl')">
+      <span>Li, estou ciente e concordo com os termos acima, incluindo as disposições da LGPD relativas ao tratamento dos meus dados pessoais</span>
+    </label>
+    <div class="btn-row">
+      <button class="btn-secondary" onclick="showScreen('screen-novo-cadastro')">← Voltar</button>
+      <button class="btn-primary" onclick="propStep(2)">Continuar →</button>
+    </div>
+  </div>
+
+  <!-- ETAPA 2: Dados pessoais -->
+  <div id="prop-e2" style="display:none">
+    <div class="section-title">Seus dados pessoais</div>
+    <div class="field"><label>Número do apartamento <span class="req">*</span></label><input type="text" id="prop-apto" placeholder="Ex: 101" inputmode="numeric"/></div>
+    <div class="field"><label>Nome completo <span class="req">*</span></label><input type="text" id="prop-nome" placeholder="Seu nome completo" autocomplete="name"/></div>
+    <div class="field-row">
+      <div class="field"><label>Data de nascimento <span class="req">*</span></label><input type="date" id="prop-nasc"/></div>
+      <div class="field"><label>CPF</label><input type="text" id="prop-cpf" placeholder="000.000.000-00" inputmode="numeric" maxlength="14"/></div>
+    </div>
+    <div class="field"><label>WhatsApp <span class="req">*</span></label><input type="tel" id="prop-tel" placeholder="(47) 99999-0000" inputmode="tel" oninput="mascaraTel(this)" maxlength="15"/></div>
+    <div class="field"><label>E-mail <span class="req">*</span></label><input type="email" id="prop-email" placeholder="seu@email.com" autocomplete="email"/><div class="field-hint">Você receberá sua senha de acesso neste e-mail após aprovação.</div></div>
+    <div class="btn-row">
+      <button class="btn-secondary" onclick="propStep(1)">← Voltar</button>
+      <button class="btn-primary" onclick="propStep(3)">Continuar →</button>
+    </div>
+  </div>
+
+  <!-- ETAPA 3: Veículos -->
+  <div id="prop-e3" style="display:none">
+    <div class="section-title">Veículos</div>
+    <div class="radio-group" style="margin-bottom:14px">
+      <label class="radio-opt" onclick="selectOpt(this,'prop-vei','sim');document.getElementById('prop-vei-bloco').style.display='block'">
+        <input type="radio" name="prop-vei" id="prop-vei-sim"><span>Tenho veículo(s) no condomínio</span>
+      </label>
+      <label class="radio-opt" onclick="selectOpt(this,'prop-vei','nao');document.getElementById('prop-vei-bloco').style.display='none'">
+        <input type="radio" name="prop-vei" id="prop-vei-nao"><span>Não possuo veículo</span>
+      </label>
+    </div>
+    <div id="prop-vei-bloco" style="display:none">
+      <div id="prop-veiculos-list"></div>
+      <button class="add-more" onclick="addVeiculo('prop')">+ Adicionar veículo</button>
+    </div>
+    <div class="btn-row">
+      <button class="btn-secondary" onclick="showScreen('screen-0')" style="flex:0.6;font-size:13px">🏠</button>
+      <button class="btn-secondary" onclick="propStep(2)" style="flex:1">← Voltar</button>
+      <button class="btn-primary" onclick="propStep(4)">Continuar →</button>
+    </div>
+  </div>
+
+  <!-- ETAPA 4: Dependentes -->
+  <div id="prop-e4" style="display:none">
+    <div class="section-title">Dependentes / moradores da unidade</div>
+    <div class="field-hint" style="margin-bottom:12px">Cadastre os familiares que também moram no apartamento. Cada um receberá sua própria senha.</div>
+    <div id="prop-dep-list"></div>
+    <button class="add-more" onclick="addDependente('prop')">+ Adicionar dependente</button>
+    <div class="section-title" style="margin-top:20px">Prestadores de serviço</div>
+    <div class="radio-group" style="margin-bottom:14px">
+      <label class="radio-opt" onclick="selectOpt(this,'prop-pres','sim');document.getElementById('prop-pres-bloco').style.display='block'">
+        <input type="radio" name="prop-pres" id="prop-pres-sim"><span>Tenho prestador para cadastrar</span>
+      </label>
+      <label class="radio-opt" onclick="selectOpt(this,'prop-pres','nao');document.getElementById('prop-pres-bloco').style.display='none'">
+        <input type="radio" name="prop-pres" id="prop-pres-nao"><span>Não tenho no momento</span>
+      </label>
+    </div>
+    <div id="prop-pres-bloco" style="display:none">
+      <div id="prop-pres-list"></div>
+      <button class="add-more" onclick="addPrestador('prop')">+ Adicionar prestador</button>
+    </div>
+    <div class="btn-row">
+      <button class="btn-secondary" onclick="showScreen('screen-0')" style="flex:0.6;font-size:13px">🏠</button>
+      <button class="btn-secondary" onclick="propStep(3)" style="flex:1">← Voltar</button>
+      <button class="btn-primary" onclick="enviarCadastro('proprietario')">Enviar cadastro ✓</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- TELA 2: INQUILINO (mesma estrutura do proprietário) -->
+<!-- ============================================================ -->
+<div class="screen" id="screen-inq">
+  <div class="step-indicator"><span class="step-text" id="inq-step-txt">Etapa 1 de 4</span><span class="step-pct" id="inq-pct">25%</span></div>
+
+  <div id="inq-e1">
+    <div class="section-title">Termo de ciência</div>
+    <div class="termo-box">
+<strong>TERMO DE CIÊNCIA, CONSENTIMENTO E PROTEÇÃO DE DADOS PESSOAIS</strong><br>
+<strong>Condomínio Bella Vista</strong><br><br>
+<strong>1. Finalidade do tratamento de dados</strong><br>
+Os dados pessoais coletados (nome, data de nascimento, CPF, telefone e e-mail) são utilizados exclusivamente para identificação e controle de acesso às dependências do Condomínio Bella Vista, em conformidade com o art. 7º, inciso IX da Lei Federal nº 13.709/2018 — LGPD.<br><br>
+<strong>2. Responsável pelo tratamento</strong><br>
+O controlador dos dados é a Administração do Condomínio Bella Vista, que se compromete a tratar as informações com sigilo e segurança, vedado o compartilhamento com terceiros sem autorização expressa do titular.<br><br>
+<strong>3. Senhas de acesso pessoal</strong><br>
+A senha gerada é pessoal, intransferível e de uso exclusivo do titular. É expressamente proibido o repasse a qualquer outra pessoa. O titular responderá civil e administrativamente por danos decorrentes do compartilhamento indevido, nos termos do art. 927 do Código Civil.<br><br>
+<strong>4. Direitos do titular</strong><br>
+Nos termos dos arts. 17 a 22 da LGPD, você tem direito a acessar, corrigir ou solicitar a exclusão de seus dados a qualquer momento pelo e-mail: condominiobellavistasbs@gmail.com.<br><br>
+<strong>5. Prazo de retenção</strong><br>
+Os dados serão mantidos enquanto perdurar o vínculo do titular com o Condomínio Bella Vista e pelo prazo legal aplicável após o encerramento deste vínculo.<br><br>
+<strong>6. Disponibilização da senha</strong><br>
+A senha de acesso somente será disponibilizada após o recebimento formal deste aceite pela administração do condomínio.
+</div>
+    <label class="check-opt" id="inq-termo-lbl">
+      <input type="checkbox" id="inq-termo" onchange="toggleCheck(this,'inq-termo-lbl')">
+      <span>Li, estou ciente e concordo com os termos acima, incluindo as disposições da LGPD relativas ao tratamento dos meus dados pessoais</span>
+    </label>
+    <div class="btn-row">
+      <button class="btn-secondary" onclick="showScreen('screen-novo-cadastro')">← Voltar</button>
+      <button class="btn-primary" onclick="inqStep(2)">Continuar →</button>
+    </div>
+  </div>
+
+  <div id="inq-e2" style="display:none">
+    <div class="section-title">Seus dados pessoais</div>
+    <div class="field"><label>Número do apartamento <span class="req">*</span></label><input type="text" id="inq-apto" placeholder="Ex: 101" inputmode="numeric"/></div>
+    <div class="field"><label>Nome completo <span class="req">*</span></label><input type="text" id="inq-nome" placeholder="Seu nome completo"/></div>
+    <div class="field-row">
+      <div class="field"><label>Data de nascimento <span class="req">*</span></label><input type="date" id="inq-nasc"/></div>
+      <div class="field"><label>CPF</label><input type="text" id="inq-cpf" placeholder="000.000.000-00" inputmode="numeric" maxlength="14"/></div>
+    </div>
+    <div class="field"><label>WhatsApp <span class="req">*</span></label><input type="tel" id="inq-tel" placeholder="(47) 99999-0000" inputmode="tel" oninput="mascaraTel(this)" maxlength="15"/></div>
+    <div class="field"><label>E-mail <span class="req">*</span></label><input type="email" id="inq-email" placeholder="seu@email.com"/><div class="field-hint">Você receberá sua senha de acesso neste e-mail após aprovação.</div></div>
+    <div class="field"><label>Nome do proprietário do apartamento</label><input type="text" id="inq-prop-nome" placeholder="Nome do proprietário"/></div>
+    <div class="btn-row">
+      <button class="btn-secondary" onclick="inqStep(1)">← Voltar</button>
+      <button class="btn-primary" onclick="inqStep(3)">Continuar →</button>
+    </div>
+  </div>
+
+  <div id="inq-e3" style="display:none">
+    <div class="section-title">Veículos</div>
+    <div class="radio-group" style="margin-bottom:14px">
+      <label class="radio-opt" onclick="selectOpt(this,'inq-vei','sim');document.getElementById('inq-vei-bloco').style.display='block'">
+        <input type="radio" name="inq-vei" id="inq-vei-sim"><span>Tenho veículo(s) no condomínio</span>
+      </label>
+      <label class="radio-opt" onclick="selectOpt(this,'inq-vei','nao');document.getElementById('inq-vei-bloco').style.display='none'">
+        <input type="radio" name="inq-vei" id="inq-vei-nao"><span>Não possuo veículo</span>
+      </label>
+    </div>
+    <div id="inq-vei-bloco" style="display:none">
+      <div id="inq-veiculos-list"></div>
+      <button class="add-more" onclick="addVeiculo('inq')">+ Adicionar veículo</button>
+    </div>
+    <div class="btn-row">
+      <button class="btn-secondary" onclick="inqStep(2)">← Voltar</button>
+      <button class="btn-primary" onclick="inqStep(4)">Continuar →</button>
+    </div>
+  </div>
+
+  <div id="inq-e4" style="display:none">
+    <div class="section-title">Dependentes / moradores da unidade</div>
+    <div class="field-hint" style="margin-bottom:12px">Cadastre os familiares que também moram no apartamento.</div>
+    <div id="inq-dep-list"></div>
+    <button class="add-more" onclick="addDependente('inq')">+ Adicionar dependente</button>
+    <div class="section-title" style="margin-top:20px">Prestadores de serviço</div>
+    <div class="radio-group" style="margin-bottom:14px">
+      <label class="radio-opt" onclick="selectOpt(this,'inq-pres','sim');document.getElementById('inq-pres-bloco').style.display='block'">
+        <input type="radio" name="inq-pres"><span>Tenho prestador para cadastrar</span>
+      </label>
+      <label class="radio-opt" onclick="selectOpt(this,'inq-pres','nao');document.getElementById('inq-pres-bloco').style.display='none'">
+        <input type="radio" name="inq-pres"><span>Não tenho no momento</span>
+      </label>
+    </div>
+    <div id="inq-pres-bloco" style="display:none">
+      <div id="inq-pres-list"></div>
+      <button class="add-more" onclick="addPrestador('inq')">+ Adicionar prestador</button>
+    </div>
+    <div class="btn-row">
+      <button class="btn-secondary" onclick="inqStep(3)">← Voltar</button>
+      <button class="btn-primary" onclick="enviarCadastro('inquilino')">Enviar cadastro ✓</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- TELA 3: DEPENDENTE -->
+<!-- ============================================================ -->
+<div class="screen" id="screen-dep">
+  <div class="section-title">Cadastro de dependente</div>
+  <div class="info-box" style="margin-bottom:16px">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    O responsável pelo apartamento (proprietário ou inquilino) deve ter feito o cadastro primeiro.
+  </div>
+  <div class="field"><label>Número do apartamento <span class="req">*</span></label><input type="text" id="dep-apto" placeholder="Ex: 101" inputmode="numeric"/></div>
+  <div class="field"><label>Nome completo <span class="req">*</span></label><input type="text" id="dep-nome" placeholder="Seu nome completo"/></div>
+  <div class="field-row">
+    <div class="field"><label>Data de nascimento <span class="req">*</span></label><input type="date" id="dep-nasc"/></div>
+    <div class="field"><label>CPF</label><input type="text" id="dep-cpf" placeholder="000.000.000-00" inputmode="numeric" maxlength="14"/></div>
+  </div>
+  <div class="field"><label>WhatsApp <span class="req">*</span></label><input type="tel" id="dep-tel" placeholder="(47) 99999-0000" inputmode="tel" oninput="mascaraTel(this)" maxlength="15"/></div>
+  <div class="field"><label>E-mail</label><input type="email" id="dep-email" placeholder="seu@email.com"/><div class="field-hint">Para receber a senha de acesso após aprovação.</div></div>
+  <div class="field">
+    <label>Parentesco / vínculo <span class="req">*</span></label>
+    <select id="dep-vinculo">
+      <option value="">Selecione...</option>
+      <option>Cônjuge / Companheiro(a)</option>
+      <option>Filho(a)</option>
+      <option>Pai / Mãe</option>
+      <option>Irmão / Irmã</option>
+      <option>Outro familiar</option>
+    </select>
+  </div>
+  <div class="field"><label>Nome do responsável pelo apartamento <span class="req">*</span></label><input type="text" id="dep-resp" placeholder="Proprietário ou inquilino"/></div>
+
+  <div class="field">
+    <label>Termo de ciência e proteção de dados <span class="req">*</span></label>
+    <div class="termo-box">
+<strong>TERMO DE CIÊNCIA, CONSENTIMENTO E PROTEÇÃO DE DADOS PESSOAIS</strong><br>
+<strong>Condomínio Bella Vista</strong><br><br>
+<strong>1. Finalidade do tratamento de dados</strong><br>
+Os dados pessoais coletados (nome, data de nascimento, CPF, telefone e e-mail) são utilizados exclusivamente para identificação e controle de acesso às dependências do Condomínio Bella Vista, em conformidade com o art. 7º, inciso IX da Lei Federal nº 13.709/2018 — LGPD.<br><br>
+<strong>2. Responsável pelo tratamento</strong><br>
+O controlador dos dados é a Administração do Condomínio Bella Vista, que se compromete a tratar as informações com sigilo e segurança, vedado o compartilhamento com terceiros sem autorização expressa do titular.<br><br>
+<strong>3. Senhas de acesso pessoal</strong><br>
+A senha gerada é pessoal, intransferível e de uso exclusivo do titular. É expressamente proibido o repasse a qualquer outra pessoa. O titular responderá civil e administrativamente por danos decorrentes do compartilhamento indevido, nos termos do art. 927 do Código Civil.<br><br>
+<strong>4. Direitos do titular</strong><br>
+Nos termos dos arts. 17 a 22 da LGPD, você tem direito a acessar, corrigir ou solicitar a exclusão de seus dados a qualquer momento pelo e-mail: condominiobellavistasbs@gmail.com.<br><br>
+<strong>5. Prazo de retenção</strong><br>
+Os dados serão mantidos enquanto perdurar o vínculo do titular com o Condomínio Bella Vista e pelo prazo legal aplicável após o encerramento deste vínculo.<br><br>
+<strong>6. Disponibilização da senha</strong><br>
+A senha de acesso somente será disponibilizada após o recebimento formal deste aceite pela administração do condomínio.
+</div>
+    <label class="check-opt" id="dep-termo-lbl" style="margin-top:8px">
+      <input type="checkbox" id="dep-termo" onchange="toggleCheck(this,'dep-termo-lbl')">
+      <span>Li, estou ciente e concordo com os termos acima, incluindo as disposições da LGPD</span>
+    </label>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn-secondary" onclick="showScreen('screen-novo-cadastro')">← Voltar</button>
+    <button class="btn-primary" onclick="enviarCadastro('dependente')">Enviar cadastro ✓</button>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- TELA 5: PROPRIETÁRIO NÃO MORADOR -->
+<!-- ============================================================ -->
+<div class="screen" id="screen-prop-nm">
+  <div class="section-title">Proprietário não morador</div>
+  <div class="info-box" style="margin-bottom:16px">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    <span style="font-size:14px">Cadastro para proprietários que não residem no condomínio. Você receberá uma senha de acesso eventual ao condomínio.</span>
+  </div>
+
+  <div class="field"><label>Número do apartamento <span class="req">*</span></label><input type="text" id="pnm-apto" placeholder="Ex: 101" inputmode="numeric"/></div>
+  <div class="field"><label>Nome completo <span class="req">*</span></label><input type="text" id="pnm-nome" placeholder="Seu nome completo"/></div>
+  <div class="field-row">
+    <div class="field"><label>Data de nascimento <span class="req">*</span></label><input type="date" id="pnm-nasc"/></div>
+    <div class="field"><label>CPF</label><input type="text" id="pnm-cpf" placeholder="000.000.000-00" inputmode="numeric" maxlength="14"/></div>
+  </div>
+  <div class="field"><label>WhatsApp <span class="req">*</span></label><input type="tel" id="pnm-tel" placeholder="(47) 99999-0000" inputmode="tel" oninput="mascaraTel(this)" maxlength="15"/></div>
+  <div class="field"><label>E-mail <span class="req">*</span></label><input type="email" id="pnm-email" placeholder="seu@email.com"/><div class="field-hint">Você receberá sua senha de acesso neste e-mail após aprovação.</div></div>
+
+
+  <div class="field">
+    <label>Termo de ciência e proteção de dados <span class="req">*</span></label>
+    <div class="termo-box">
+<strong>TERMO DE CIÊNCIA, CONSENTIMENTO E PROTEÇÃO DE DADOS PESSOAIS</strong><br>
+<strong>Condomínio Bella Vista</strong><br><br>
+<strong>1. Finalidade do tratamento de dados</strong><br>
+Os dados pessoais coletados são utilizados exclusivamente para identificação e controle de acesso às dependências do Condomínio Bella Vista, em conformidade com o art. 7º, inciso IX da Lei Federal nº 13.709/2018 — LGPD.<br><br>
+<strong>2. Responsável pelo tratamento</strong><br>
+O controlador dos dados é a Administração do Condomínio Bella Vista, que se compromete a tratar as informações com sigilo e segurança.<br><br>
+<strong>3. Senha de acesso</strong><br>
+A senha gerada é pessoal, intransferível e de uso exclusivo do titular. É expressamente proibido o repasse a qualquer outra pessoa.<br><br>
+<strong>4. Direitos do titular</strong><br>
+Nos termos dos arts. 17 a 22 da LGPD, você tem direito a acessar, corrigir ou solicitar a exclusão de seus dados pelo e-mail: condominiobellavistasbs@gmail.com.
+    </div>
+    <label class="check-opt" id="pnm-termo-lbl" style="margin-top:8px">
+      <input type="checkbox" id="pnm-termo" onchange="toggleCheck(this,'pnm-termo-lbl')">
+      <span>Li, estou ciente e concordo com os termos acima, incluindo as disposições da LGPD</span>
+    </label>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn-secondary" onclick="showScreen('screen-novo-cadastro')">← Voltar</button>
+    <button class="btn-primary" onclick="enviarCadastro('prop_nao_morador')">Enviar cadastro ✓</button>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- TELA 4: PRESTADOR -->
+<!-- ============================================================ -->
+<div class="screen" id="screen-pres">
+  <div class="section-title">Cadastro de prestador de serviço</div>
+  <div class="info-box" style="margin-bottom:16px">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    Prestadores recebem senha temporária. O morador responsável deve autorizar o acesso.
+  </div>
+  <div class="field"><label>Número do apartamento <span class="req">*</span></label><input type="text" id="pres-apto" placeholder="Ex: 101" inputmode="numeric"/></div>
+  <div class="field"><label>Nome do prestador <span class="req">*</span></label><input type="text" id="pres-nome" placeholder="Nome completo"/></div>
+  <div class="field"><label>WhatsApp / Celular <span class="req">*</span></label><input type="tel" id="pres-tel" placeholder="(47) 99999-0000" inputmode="tel" oninput="mascaraTel(this)" maxlength="15"/></div>
+  <div class="field"><label>Tipo de serviço <span class="req">*</span></label>
+    <select id="pres-tipo">
+      <option value="">Selecione...</option>
+      <option>Diarista</option><option>Cuidador(a)</option><option>Enfermeiro(a)</option>
+      <option>Babá</option><option>Jardineiro(a)</option><option>Outro</option>
+    </select>
+  </div>
+  <div class="field"><label>Dias de acesso <span class="req">*</span></label><input type="text" id="pres-dias" placeholder="Ex: Segunda e quarta | Seg a sex"/></div>
+  <div class="field-row">
+    <div class="field"><label>Horário entrada</label><input type="time" id="pres-hin"/></div>
+    <div class="field"><label>Horário saída</label><input type="time" id="pres-hout"/></div>
+  </div>
+  <div class="field"><label>Período <span class="req">*</span></label>
+    <select id="pres-periodo">
+      <option value="">Selecione...</option>
+      <option>Indefinido</option><option>1 semana</option><option>2 semanas</option>
+      <option>1 mês</option><option>3 meses</option><option>6 meses</option><option>1 ano</option>
+    </select>
+  </div>
+  <div class="field"><label>Nome do morador responsável <span class="req">*</span></label><input type="text" id="pres-resp" placeholder="Quem autorizou este prestador"/></div>
+  <div class="field"><label>E-mail do morador responsável</label><input type="email" id="pres-email-resp" placeholder="para@notificacao.com"/><div class="field-hint">Para envio da senha temporária do prestador.</div></div>
+
+  <div class="field">
+    <label>Termo de ciência e proteção de dados <span class="req">*</span></label>
+    <div class="termo-box">
+<strong>TERMO DE CIÊNCIA, CONSENTIMENTO E PROTEÇÃO DE DADOS PESSOAIS</strong><br>
+<strong>Condomínio Bella Vista</strong><br><br>
+<strong>1. Finalidade do tratamento de dados</strong><br>
+Os dados pessoais coletados (nome, data de nascimento, CPF, telefone e e-mail) são utilizados exclusivamente para identificação e controle de acesso às dependências do Condomínio Bella Vista, em conformidade com o art. 7º, inciso IX da Lei Federal nº 13.709/2018 — LGPD.<br><br>
+<strong>2. Responsável pelo tratamento</strong><br>
+O controlador dos dados é a Administração do Condomínio Bella Vista, que se compromete a tratar as informações com sigilo e segurança, vedado o compartilhamento com terceiros sem autorização expressa do titular.<br><br>
+<strong>3. Senhas de acesso pessoal</strong><br>
+A senha gerada é pessoal, intransferível e de uso exclusivo do titular. É expressamente proibido o repasse a qualquer outra pessoa. O titular responderá civil e administrativamente por danos decorrentes do compartilhamento indevido, nos termos do art. 927 do Código Civil.<br><br>
+<strong>4. Direitos do titular</strong><br>
+Nos termos dos arts. 17 a 22 da LGPD, você tem direito a acessar, corrigir ou solicitar a exclusão de seus dados a qualquer momento pelo e-mail: condominiobellavistasbs@gmail.com.<br><br>
+<strong>5. Prazo de retenção</strong><br>
+Os dados serão mantidos enquanto perdurar o vínculo do titular com o Condomínio Bella Vista e pelo prazo legal aplicável após o encerramento deste vínculo.<br><br>
+<strong>6. Disponibilização da senha</strong><br>
+A senha de acesso somente será disponibilizada após o recebimento formal deste aceite pela administração do condomínio.
+</div>
+    <label class="check-opt" id="pres-termo-lbl" style="margin-top:8px">
+      <input type="checkbox" id="pres-termo" onchange="toggleCheck(this,'pres-termo-lbl')">
+      <span>Li, estou ciente e concordo com os termos acima, incluindo as disposições da LGPD</span>
+    </label>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn-secondary" onclick="showScreen('screen-novo-cadastro')">← Voltar</button>
+    <button class="btn-primary" onclick="enviarCadastro('prestador')">Enviar cadastro ✓</button>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- TELA SUCESSO -->
+<!-- ============================================================ -->
+<div class="screen" id="screen-ok">
+  <div class="success-wrap">
+    <div class="success-icon">
+      <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#1a7a4a" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+    <div class="success-title">Cadastro enviado!</div>
+    <div class="success-desc">Seus dados foram recebidos. Assim que a administração aprovar, você receberá sua senha de acesso por e-mail.</div>
+    <div class="success-card" id="success-resumo"></div>
+    <div class="success-desc" style="margin-top:8px;font-size:13px">Dúvidas: <a href="mailto:condominiobellavistasbs@gmail.com" style="color:var(--blue)">condominiobellavistasbs@gmail.com</a></div>
+    <div class="btn-row" style="margin-top:24px">
+      <button class="btn-secondary" onclick="novoAcadastro()">Fazer outro cadastro</button>
+    </div>
+  </div>
+</div>
+
+<script>
+
+
+// ================================================================
+// RESERVAS — Salão de Festas
+// ================================================================
+let salaoAtivo    = 'Salão 1';
+let calAno        = new Date().getFullYear();
+let calMes        = new Date().getMonth();
+let datasOcupadas = [];
+let dataSelecionada = null;
+const DIAS_SEMANA = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+const MESES_NOME  = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho',
+                     'Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+
+function selecionarSalao(salao, el) {
+  salaoAtivo = salao;
+  dataSelecionada = null;
+  document.getElementById('reserva-form').style.display = 'none';
+  document.querySelectorAll('.salao-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  carregarDatasOcupadas();
+}
+
+function carregarDatasOcupadas() {
+  fetch(SCRIPT_URL + '?acao=datasDisponiveis&salao=' + encodeURIComponent(salaoAtivo))
+    .then(r => r.json())
+    .then(d => {
+      datasOcupadas = d.ocupadas || [];
+      renderCalendario();
+      carregarMinhasReservas();
+    })
+    .catch(() => { datasOcupadas = []; renderCalendario(); });
+}
+
+function navMes(dir) {
+  calMes += dir;
+  if (calMes > 11) { calMes = 0; calAno++; }
+  if (calMes < 0)  { calMes = 11; calAno--; }
+  dataSelecionada = null;
+  document.getElementById('reserva-form').style.display = 'none';
+  renderCalendario();
+}
+
+function renderCalendario() {
+  document.getElementById('cal-titulo').textContent = MESES_NOME[calMes] + ' ' + calAno;
+  const grid  = document.getElementById('cal-grid');
+  const hoje  = new Date(); hoje.setHours(0,0,0,0);
+  const primeiro = new Date(calAno, calMes, 1).getDay();
+  const totalDias= new Date(calAno, calMes+1, 0).getDate();
+
+  let html = DIAS_SEMANA.map(d => `<div class="cal-dia-nome">${d}</div>`).join('');
+
+  for (let i = 0; i < primeiro; i++) html += '<div class="cal-dia vazio"></div>';
+
+  for (let d = 1; d <= totalDias; d++) {
+    const dataStr = calAno + '-' + String(calMes+1).padStart(2,'0') + '-' + String(d).padStart(2,'0');
+    const dataObj = new Date(calAno, calMes, d);
+    const ehHoje  = dataObj.getTime() === hoje.getTime();
+    const passado = dataObj < hoje;
+    const ocupado = datasOcupadas.includes(dataStr);
+    const selecionado = dataSelecionada === dataStr;
+
+    let cls = 'cal-dia';
+    if (passado)    cls += ' passado';
+    else if (ocupado)    cls += ' ocupado';
+    else if (selecionado) cls += ' selecionado';
+    else cls += ' disponivel';
+    if (ehHoje && !selecionado) cls += ' hoje';
+
+    const onclick = (!passado && !ocupado) ? `onclick="selecionarData('${dataStr}')"` : '';
+    html += `<div class="${cls}" ${onclick}>${d}</div>`;
+  }
+  grid.innerHTML = html;
+}
+
+function selecionarData(dataStr) {
+  dataSelecionada = dataStr;
+  renderCalendario();
+
+  // Monta info da reserva
+  const [ano,mes,dia] = dataStr.split('-');
+  const dataFormatada = dia + '/' + mes + '/' + ano;
+  const mesNome = MESES_NOME[parseInt(mes)-1];
+
+  // Verifica se é gratuita (conta reservas do ano)
+  const reservasAno = (moradorDados.reservas || []).filter(r =>
+    r['Status'] !== 'Cancelado' && String(r['Data Uso']||'').startsWith(ano)
+  ).length;
+  const gratuita = reservasAno === 0;
+
+  document.getElementById('reserva-form-titulo').textContent = salaoAtivo + ' — ' + dataFormatada;
+  document.getElementById('reserva-form-info').innerHTML =
+    '<strong>Data:</strong> ' + dataFormatada + '<br>' +
+    '<strong>Salão:</strong> ' + salaoAtivo + '<br>' +
+    '<strong>Taxa:</strong> <span style="color:var(--amber);font-weight:700">R$ 50,00</span>';
+
+  // Mostra opção de isenção se elegível
+  const isencaoWrap = document.getElementById('res-isencao-wrap');
+  const isencaoCheck = document.getElementById('res-isencao');
+  if (gratuita) {
+    isencaoWrap.style.display = 'block';
+    isencaoCheck.checked = false;
+    document.getElementById('res-isencao-lbl').style.borderColor = 'var(--gray-3)';
+    document.getElementById('res-isencao-lbl').style.background = '';
+  } else {
+    isencaoWrap.style.display = 'none';
+    isencaoCheck.checked = false;
+  }
+  document.getElementById('reserva-form').style.display = 'block';
+  document.getElementById('res-obs').value = '';
+  document.getElementById('reserva-form').scrollIntoView({ behavior:'smooth', block:'nearest' });
+}
+
+function confirmarReserva() {
+  if (!dataSelecionada) return;
+  const obs  = document.getElementById('res-obs').value.trim();
+  const btn  = document.querySelector('#reserva-form .btn-primary');
+  btn.disabled = true; btn.textContent = 'Confirmando...';
+
+  const senha = moradorDados.senha;
+  const solicitaIsencao = document.getElementById('res-isencao').checked;
+  fetch(SCRIPT_URL + '?acao=fazerReserva&senha=' + senha +
+    '&salao=' + encodeURIComponent(salaoAtivo) +
+    '&data=' + dataSelecionada +
+    '&obs=' + encodeURIComponent(obs) +
+    '&isencao=' + solicitaIsencao)
+    .then(r => r.json())
+    .then(d => {
+      btn.disabled = false; btn.textContent = '✅ Confirmar reserva';
+      if (d.ok) {
+        showToast(d.mensagem || 'Reserva confirmada!');
+        document.getElementById('reserva-form').style.display = 'none';
+        dataSelecionada = null;
+        carregarDatasOcupadas();
+        // Atualiza lista local
+        if (!moradorDados.reservas) moradorDados.reservas = [];
+        moradorDados.reservas.push({ 'Data Uso': dataSelecionada, 'Status': 'Confirmado' });
+      } else {
+        showToast(d.erro || 'Erro ao reservar');
+      }
+    })
+    .catch(() => { btn.disabled=false; btn.textContent='✅ Confirmar reserva'; showToast('Erro de conexão'); });
+}
+
+function carregarMinhasReservas() {
+  fetch(SCRIPT_URL + '?acao=getReservas&senha=' + moradorDados.senha + '&salao=' + encodeURIComponent(salaoAtivo))
+    .then(r => r.json())
+    .then(d => {
+      if (!d.ok) return;
+      // Filtra só as do apto logado
+      const minhas = (d.dados || []).filter(r => String(r['Apto']) === String(moradorLogado.apto));
+      moradorDados.reservas = minhas;
+      renderMinhasReservas(minhas);
+    })
+    .catch(() => {});
+}
+
+function renderMinhasReservas(lista) {
+  const div = document.getElementById('mor-reservas-list');
+  if (!lista || !lista.length) {
+    div.innerHTML = '<p style="font-size:13px;color:var(--gray-6);text-align:center;padding:16px">Nenhuma reserva para ' + salaoAtivo + '.</p>';
+    return;
+  }
+  // Ordena por data mais recente
+  lista.sort((a,b) => new Date(b['Data Uso']) - new Date(a['Data Uso']));
+  div.innerHTML = lista.map(r => {
+    const cancelado  = r['Status'] === 'Cancelado';
+    const [ano,mes,dia] = (r['Data Uso']||'').split('-');
+    const dataFmt   = dia && mes && ano ? dia+'/'+mes+'/'+ano : r['Data Uso'];
+    const taxaCls   = cancelado ? 'taxa-cancel' : (r['Taxa']==='Gratuita'?'taxa-gratis':'taxa-paga');
+    const taxaTxt   = cancelado ? 'Cancelado' : r['Taxa'];
+    return `<div class="reserva-card ${cancelado?'cancelado':'confirmado'}">
+      <div class="reserva-card-title">${r['Salão']||salaoAtivo} — ${dataFmt}</div>
+      <div class="reserva-card-sub">${r['Obs.']&&r['Obs.']!=='—'?'📝 '+r['Obs.']+'<br>':''}${r['Cobrança']&&r['Cobrança']!=='—'?'💳 '+r['Cobrança']:''}
+      </div>
+      <span class="reserva-card-taxa ${taxaCls}">${taxaTxt}</span>
+      ${r['Isenção']&&r['Isenção']!=='—'?`<div style="margin-top:6px;font-size:12px;padding:4px 8px;border-radius:6px;background:${r['Isenção']==='Deferida'?'var(--green-l)':r['Isenção']==='Negada'?'var(--red-l)':'var(--amber-l)'};color:${r['Isenção']==='Deferida'?'var(--green)':r['Isenção']==='Negada'?'var(--red)':'var(--amber)'}">🏷 Isenção: ${r['Isenção']}</div>`:''}
+      ${!cancelado ? `<div style="margin-top:10px"><button class="btn-del-item" onclick="cancelarMinhaReserva(${r.row},'${r['Data Uso']}')">✕ Cancelar reserva</button></div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+function cancelarMinhaReserva(row, dataUso) {
+  const [ano,mes,dia] = (dataUso||'').split('-');
+  const dataFmt = dia+'/'+mes+'/'+ano;
+  if (!confirm('Cancelar reserva do dia ' + dataFmt + '?\n\nLembre-se: cancelamento só é permitido com pelo menos 2 dias de antecedência.')) return;
+
+  fetch(SCRIPT_URL + '?acao=cancelarReserva&senha=' + moradorDados.senha + '&row=' + row)
+    .then(r => r.json())
+    .then(d => {
+      if (d.ok) { showToast('Reserva cancelada!'); carregarDatasOcupadas(); }
+      else showToast(d.erro || 'Erro ao cancelar');
+    })
+    .catch(() => showToast('Erro de conexão'));
+}
+
+// ================================================================
+// ÁREA DO MORADOR
+// ================================================================
+let moradorLogado = null;
+let moradorDados  = null;
+
+// PIN input — avança para próximo campo automaticamente
+function pinInput(el, idx) {
+  el.value = el.value.replace(/\D/g,'');
+  const pins = document.querySelectorAll('.pin-digit');
+  if (el.value && idx < 5) pins[idx+1].focus();
+  if (idx === 5 && el.value) entrarMorador();
+}
+
+function getSenhaPin() {
+  return Array.from(document.querySelectorAll('.pin-digit')).map(i=>i.value).join('');
+}
+
+function entrarMorador() {
+  const senha = getSenhaPin();
+  if (senha.length !== 6) { showToast('Digite os 6 dígitos da sua senha'); return; }
+
+  const btn = document.getElementById('btn-entrar-morador');
+  btn.disabled = true; btn.textContent = 'Verificando...';
+
+  fetch(SCRIPT_URL + '?acao=loginMorador&senha=' + senha)
+    .then(r => r.json())
+    .then(d => {
+      btn.disabled = false; btn.textContent = 'Entrar →';
+      if (d.ok) {
+        moradorLogado = d.morador;
+        moradorDados  = d.dados;
+        moradorDados.senha = senha;
+        abrirAreaMorador();
+      } else {
+        showToast(d.erro || 'Senha inválida');
+        document.querySelectorAll('.pin-digit').forEach(p => p.value = '');
+        document.querySelectorAll('.pin-digit')[0].focus();
+      }
+    })
+    .catch(() => {
+      btn.disabled = false; btn.textContent = 'Entrar →';
+      showToast('Erro de conexão. Tente novamente.');
+    });
+}
+
+function abrirAreaMorador() {
+  document.getElementById('mor-nome').textContent = 'Olá, ' + moradorDados.responsavel.nome.split(' ')[0] + '!';
+  document.getElementById('mor-apto').textContent = 'Apartamento ' + moradorLogado.apto + ' — ' + moradorLogado.vinculo;
+  morTab('meus-dados', document.querySelector('.morador-tab'));
+  showScreen('screen-area-morador');
+  setProgress(100, 'Minha área');
+}
+
+function sairAreaMorador() {
+  moradorLogado = null; moradorDados = null;
+  document.querySelectorAll('.pin-digit').forEach(p => p.value = '');
+  setProgress(0, 'Sistema de cadastro de acesso');
+  showScreen('screen-0');
+}
+
+function morTab(tab, el) {
+  document.querySelectorAll('.morador-tab').forEach(t => t.classList.remove('active'));
+  try { if (el && el.classList) el.classList.add('active'); } catch(e) {}
+  ['meus-dados','veiculos','dependentes','prestadores','reservas'].forEach(t => {
+    const div = document.getElementById('mor-'+t);
+    if (div) div.style.display = t === tab ? 'block' : 'none';
+  });
+  if (tab === 'meus-dados')   renderMeusDados();
+  if (tab === 'veiculos')     renderVeiculos();
+  if (tab === 'dependentes')  renderDependentes();
+  if (tab === 'prestadores')  renderPrestadores();
+  if (tab === 'reservas') {
+    calAno = new Date().getFullYear();
+    calMes = new Date().getMonth();
+    selecionarSalao('Salão Piso Inferior', document.getElementById('stab1'));
+  }
+}
+
+// ---- MEUS DADOS ----
+function formatarData(v) {
+  if (!v || v === '—') return '—';
+  // Formato ISO: 1982-07-06T03:00:00.000Z
+  if (v.includes('T')) {
+    const d = new Date(v);
+    return d.getDate().toString().padStart(2,'0') + '/' +
+           (d.getMonth()+1).toString().padStart(2,'0') + '/' +
+           d.getFullYear();
+  }
+  // Formato YYYY-MM-DD
+  if (v.match(/^\d{4}-\d{2}-\d{2}$/)) {
+    const [ano,mes,dia] = v.split('-');
+    return dia + '/' + mes + '/' + ano;
+  }
+  return v;
+}
+
+function renderMeusDados() {
+  const r = moradorDados.responsavel;
+  document.getElementById('mor-dados-view').innerHTML =
+    infoRow('Nome', r.nome) + infoRow('Vínculo', r.vinculo) +
+    infoRow('Nascimento', formatarData(r.nasc)) + infoRow('CPF', r.cpf) +
+    infoRow('WhatsApp', r.tel) + infoRow('E-mail', r.email);
+}
+
+function infoRow(k,v) {
+  return '<div class="minha-info-row"><span class="minha-info-key">'+k+'</span><span class="minha-info-val">'+(v||'—')+'</span></div>';
+}
+
+function editarMeusDados() {
+  const r   = moradorDados.responsavel;
+  const div = document.getElementById('mor-dados-edit');
+  div.innerHTML = `
+    <div class="field"><label>Nome completo</label><input type="text" id="ed-nome" value="${r.nome||''}"/></div>
+    <div class="field-row">
+      <div class="field"><label>Data nascimento</label><input type="text" id="ed-nasc" value="${r.nasc||''}"/></div>
+      <div class="field"><label>CPF</label><input type="text" id="ed-cpf" value="${r.cpf||''}"/></div>
+    </div>
+    <div class="field"><label>WhatsApp</label><input type="tel" id="ed-tel" value="${r.tel||''}" oninput="mascaraTel(this)" maxlength="15" placeholder="(47) 99999-0000"/></div>
+    <div class="field"><label>E-mail</label><input type="email" id="ed-email" value="${r.email||''}"/></div>
+    <div class="btn-row">
+      <button class="btn-secondary" onclick="document.getElementById('mor-dados-edit').style.display='none'">Cancelar</button>
+      <button class="btn-primary" onclick="salvarMeusDados()">💾 Salvar</button>
+    </div>`;
+  div.style.display = 'block';
+}
+
+function salvarMeusDados() {
+  const dados = {
+    'Nome Completo': document.getElementById('ed-nome').value.trim(),
+    'Data Nasc.':    document.getElementById('ed-nasc').value.trim(),
+    'CPF':           document.getElementById('ed-cpf').value.trim(),
+    'Telefone':      document.getElementById('ed-tel').value.trim(),
+    'E-mail':        document.getElementById('ed-email').value.trim()
+  };
+  apiMorador('editarMorador', { aba:'Moradores', row: moradorLogado.row, dados: JSON.stringify(dados) }, () => {
+    Object.assign(moradorDados.responsavel, {
+      nome: dados['Nome Completo'], nasc: dados['Data Nasc.'],
+      cpf: dados['CPF'], tel: dados['Telefone'], email: dados['E-mail']
+    });
+    document.getElementById('mor-dados-edit').style.display = 'none';
+    renderMeusDados();
+    showToast('Dados atualizados!');
+  });
+}
+
+// ---- VEÍCULOS ----
+function renderVeiculos() {
+  const lista = document.getElementById('mor-veiculos-list');
+  const veis  = moradorDados.veiculos || [];
+  if (!veis.length) { lista.innerHTML = '<p style="font-size:13px;color:var(--gray-6);text-align:center;padding:16px">Nenhum veículo cadastrado.</p>'; return; }
+  lista.innerHTML = veis.map((v,i) => `
+    <div class="item-card">
+      <div class="item-card-title">${v['Modelo']||'—'} <span style="font-size:11px;color:var(--gray-6)">${v['Placa']||''}</span></div>
+      <div class="item-card-sub">${v['Tipo']||'—'} · ${v['Cor']||'—'}</div>
+      <div class="item-card-actions">
+        <button class="btn-del-item" onclick="excluirItem('Veículos',${v.row},${i},'veiculo')">🗑 Remover</button>
+      </div>
+    </div>`).join('');
+}
+
+function abrirAddVeiculo() {
+  const d = document.getElementById('mor-add-veiculo');
+  d.style.display = d.style.display === 'none' ? 'block' : 'none';
+}
+
+function salvarNovoVeiculo() {
+  const dados = {
+    tipo: document.getElementById('nv-tipo').value,
+    modelo: document.getElementById('nv-modelo').value.trim(),
+    cor: document.getElementById('nv-cor').value.trim(),
+    placa: document.getElementById('nv-placa').value.toUpperCase().trim()
+  };
+  if (!dados.modelo || !dados.placa) { showToast('Informe o modelo e a placa'); return; }
+  apiMorador('adicionarItem', { tipo:'veiculo', dados: JSON.stringify(dados) }, () => {
+    moradorDados.veiculos.push({ 'Modelo':dados.modelo,'Tipo':dados.tipo,'Cor':dados.cor,'Placa':dados.placa, row:0 });
+    document.getElementById('mor-add-veiculo').style.display = 'none';
+    ['nv-modelo','nv-cor','nv-placa'].forEach(id => document.getElementById(id).value='');
+    renderVeiculos();
+    showToast('Veículo adicionado!');
+  });
+}
+
+// ---- DEPENDENTES ----
+function renderDependentes() {
+  const lista = document.getElementById('mor-dep-list');
+  const deps  = (moradorDados.moradores || []).filter(m => m['Vínculo'] === 'DEPENDENTE');
+  if (!deps.length) { lista.innerHTML = '<p style="font-size:13px;color:var(--gray-6);text-align:center;padding:16px">Nenhum dependente cadastrado.</p>'; return; }
+  lista.innerHTML = deps.map((d,i) => `
+    <div class="item-card">
+      <div class="item-card-title">${d['Nome Completo']||'—'}</div>
+      <div class="item-card-sub">${d['Obs.']||''} · Nasc: ${d['Data Nasc.']||'—'}</div>
+      <div class="item-card-actions">
+        <button class="btn-del-item" onclick="excluirItem('Moradores',${d.row},${i},'dependente')">🗑 Remover</button>
+      </div>
+    </div>`).join('');
+}
+
+function abrirAddDependente() {
+  const d = document.getElementById('mor-add-dep');
+  d.style.display = d.style.display === 'none' ? 'block' : 'none';
+}
+
+function salvarNovoDependente() {
+  const dados = {
+    nome: document.getElementById('nd-nome').value.trim(),
+    nasc: document.getElementById('nd-nasc').value,
+    parentesco: document.getElementById('nd-parent').value,
+    tel: document.getElementById('nd-tel').value.trim(),
+    email: document.getElementById('nd-email').value.trim()
+  };
+  if (!dados.nome) { showToast('Informe o nome do dependente'); return; }
+  apiMorador('adicionarItem', { tipo:'dependente', dados: JSON.stringify(dados) }, () => {
+    moradorDados.moradores.push({ 'Nome Completo':dados.nome,'Vínculo':'DEPENDENTE','Data Nasc.':dados.nasc,'Obs.':dados.parentesco, row:0 });
+    document.getElementById('mor-add-dep').style.display = 'none';
+    renderDependentes();
+    showToast('Dependente adicionado! Senha enviada ao admin.');
+  });
+}
+
+// ---- PRESTADORES ----
+function renderPrestadores() {
+  const lista = document.getElementById('mor-pres-list');
+  const pres  = moradorDados.prestadores || [];
+  if (!pres.length) { lista.innerHTML = '<p style="font-size:13px;color:var(--gray-6);text-align:center;padding:16px">Nenhum prestador cadastrado.</p>'; return; }
+  lista.innerHTML = pres.map((p,i) => `
+    <div class="item-card">
+      <div class="item-card-title">${p['Nome Prestador']||'—'}</div>
+      <div class="item-card-sub">${p['Tipo Serviço']||'—'} · ${p['Dias']||'—'} · ${p['Horário']||'—'} · ${p['Período']||'—'}</div>
+      <div class="item-card-actions">
+        <button class="btn-del-item" onclick="excluirItem('Prestadores',${p.row},${i},'prestador')">🗑 Remover</button>
+      </div>
+    </div>`).join('');
+}
+
+function abrirAddPrestador() {
+  const d = document.getElementById('mor-add-pres');
+  d.style.display = d.style.display === 'none' ? 'block' : 'none';
+}
+
+function salvarNovoPrestador() {
+  const hin  = document.getElementById('np-hin').value;
+  const hout = document.getElementById('np-hout').value;
+  const dados = {
+    nome: document.getElementById('np-nome').value.trim(),
+    tipo_svc: document.getElementById('np-tipo').value,
+    dias: document.getElementById('np-dias').value.trim(),
+    horario: hin + (hout ? ' às ' + hout : ''),
+    periodo: document.getElementById('np-periodo').value
+  };
+  if (!dados.nome || !dados.dias) { showToast('Informe o nome e os dias do prestador'); return; }
+  apiMorador('adicionarItem', { tipo:'prestador', dados: JSON.stringify(dados) }, () => {
+    moradorDados.prestadores.push({ 'Nome Prestador':dados.nome,'Tipo Serviço':dados.tipo_svc,'Dias':dados.dias,'Horário':dados.horario,'Período':dados.periodo, row:0 });
+    document.getElementById('mor-add-pres').style.display = 'none';
+    renderPrestadores();
+    showToast('Prestador adicionado!');
+  });
+}
+
+// ---- EXCLUIR ITEM ----
+function excluirItem(aba, row, idx, tipo) {
+  if (!confirm('Deseja remover este ' + tipo + '?')) return;
+  apiMorador('excluirItem', { aba, row }, () => {
+    if (tipo === 'veiculo')    moradorDados.veiculos.splice(idx,1), renderVeiculos();
+    if (tipo === 'dependente') moradorDados.moradores.splice(idx,1), renderDependentes();
+    if (tipo === 'prestador')  moradorDados.prestadores.splice(idx,1), renderPrestadores();
+    showToast('Removido com sucesso!');
+  });
+}
+
+// ---- API HELPER ----
+function apiMorador(acao, params, onSuccess) {
+  const senha = moradorDados ? moradorDados.senha : getSenhaPin();
+  let url = SCRIPT_URL + '?acao=' + acao + '&senha=' + senha;
+  Object.entries(params).forEach(([k,v]) => url += '&' + k + '=' + encodeURIComponent(v));
+
+  fetch(url).then(r => r.json()).then(d => {
+    if (d.ok) { onSuccess && onSuccess(d); }
+    else showToast(d.erro || 'Erro ao processar', 'err');
+  }).catch(() => showToast('Erro de conexão'));
+}
+
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxcPgSpZhWIRgwCrScTXzUeUwmf5JzhxRZE1QS-B18PUkwbsMWHVrQISLg29Pu63lJjdQ/exec';
+
+let tipoSelecionado = null;
+let propEtapa = 1, inqEtapa = 1;
+let veiCount = {prop:0, inq:0};
+let depCount = {prop:0, inq:0};
+let presCount = {prop:0, inq:0};
+
+
+// ================================================================
+// SEGURANÇA — Sanitização de inputs
+// ================================================================
+function sanitizarInput(v, maxLen) {
+  maxLen = maxLen || 200;
+  return String(v || '').replace(/<[^>]+>/g, '').replace(/[<>]/g, '').trim().substring(0, maxLen);
+}
+
+function sanitizarNome(v) {
+  return String(v || '').replace(/[^a-zA-ZÀ-ÿ\s'.-]/g, '').trim().substring(0, 100);
+}
+
+function sanitizarApto(v) {
+  var s = String(v || '').replace(/\D/g, '').trim();
+  var n = parseInt(s);
+  if (isNaN(n) || n < 101 || n > 507) return null;
+  var andar = Math.floor(n / 100);
+  var num   = n % 100;
+  if (andar < 1 || andar > 5 || num < 1 || num > 7) return null;
+  return s;
+}
+
+function validarEmailFmt(v) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(v||'').trim());
+}
+
+function sanitizarPlaca(v) {
+  return String(v || '').toUpperCase().replace(/[^A-Z0-9]/g, '').substring(0, 8);
+}
+
+// ---- MÁSCARA TELEFONE ----
+function mascaraTel(input) {
+  let v = input.value.replace(/\D/g,'').substring(0,11);
+  if (v.length <= 10) {
+    v = v.replace(/(\d{2})(\d{4})(\d{0,4})/,'($1) $2-$3');
+  } else {
+    v = v.replace(/(\d{2})(\d{5})(\d{0,4})/,'($1) $2-$3');
+  }
+  input.value = v;
+}
+
+function validarTel(valor) {
+  const nums = String(valor||'').replace(/\D/g,'');
+  return nums.length >= 10 && nums.length <= 11;
+}
+
+function validarApto(valor) {
+  return sanitizarApto(valor) !== null;
+}
+
+// ---- NAVEGAÇÃO ----
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function setProgress(pct, sub) {
+  document.getElementById('progress-bar').style.width = pct + '%';
+  if(sub) document.getElementById('header-sub').textContent = sub;
+}
+
+function voltarInicio() {
+  tipoSelecionado = null;
+  document.querySelectorAll('.tipo-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById('btn-tipo').disabled = true;
+  setProgress(0, 'Sistema de cadastro de acesso');
+  showScreen('screen-0');
+}
+
+function selectTipo(tipo, el) {
+  document.querySelectorAll('.tipo-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  tipoSelecionado = tipo;
+  document.getElementById('btn-tipo').disabled = false;
+}
+
+function irParaFormulario() {
+  if (!tipoSelecionado) return;
+  const labels = {proprietario:'Proprietário',inquilino:'Inquilino',dependente:'Dependente',prestador:'Prestador de serviço',prop_nao_morador:'Proprietário não morador'};
+  setProgress(10, 'Cadastro — ' + labels[tipoSelecionado]);
+  if (tipoSelecionado === 'proprietario') { propEtapa=1; showPropEtapa(1); showScreen('screen-prop'); }
+  else if (tipoSelecionado === 'inquilino') { inqEtapa=1; showInqEtapa(1); showScreen('screen-inq'); }
+  else if (tipoSelecionado === 'dependente') { setProgress(50,'Cadastro — Dependente'); showScreen('screen-dep'); }
+  else if (tipoSelecionado === 'prop_nao_morador') { setProgress(50,'Cadastro — Proprietário não morador'); showScreen('screen-prop-nm'); }
+  else { setProgress(50,'Cadastro — Prestador'); showScreen('screen-pres'); }
+}
+
+// ---- PROPRIETÁRIO ----
+function propStep(n) {
+  if (n===2 && !document.getElementById('prop-termo').checked) { showToast('Aceite o termo para continuar'); return; }
+  if (n===3 && !validarPessoal('prop')) return;
+  propEtapa = n; showPropEtapa(n);
+}
+function showPropEtapa(n) {
+  for(let i=1;i<=4;i++) document.getElementById('prop-e'+i).style.display = i===n?'block':'none';
+  const pct = Math.round(n/4*100);
+  document.getElementById('prop-step-txt').textContent = 'Etapa '+n+' de 4';
+  document.getElementById('prop-pct').textContent = pct+'%';
+  setProgress(pct);
+  window.scrollTo(0,0);
+}
+
+// ---- INQUILINO ----
+function inqStep(n) {
+  if (n===2 && !document.getElementById('inq-termo').checked) { showToast('Aceite o termo para continuar'); return; }
+  if (n===3 && !validarPessoal('inq')) return;
+  inqEtapa = n; showInqEtapa(n);
+}
+function showInqEtapa(n) {
+  for(let i=1;i<=4;i++) document.getElementById('inq-e'+i).style.display = i===n?'block':'none';
+  const pct = Math.round(n/4*100);
+  document.getElementById('inq-step-txt').textContent = 'Etapa '+n+' de 4';
+  document.getElementById('inq-pct').textContent = pct+'%';
+  setProgress(pct);
+  window.scrollTo(0,0);
+}
+
+// ---- VALIDAÇÃO ----
+function validarPessoal(pfx) {
+  const apto  = document.getElementById(pfx+'-apto').value.trim();
+  const nome  = document.getElementById(pfx+'-nome').value.trim();
+  const nasc  = document.getElementById(pfx+'-nasc').value;
+  const tel   = document.getElementById(pfx+'-tel').value.trim();
+  const email = document.getElementById(pfx+'-email').value.trim();
+  if (!apto)  { showToast('Informe o número do apartamento'); return false; }
+  if (!validarApto(apto)) { showToast('Apartamento inválido — use o número correto (ex: 101 a 507)'); return false; }
+  if (!nome || nome.length < 3)  { showToast('Informe seu nome completo'); return false; }
+  if (!nasc)  { showToast('Informe sua data de nascimento'); return false; }
+  if (!tel)   { showToast('Informe seu WhatsApp'); return false; }
+  if (!validarTel(tel)) { showToast('WhatsApp inválido — use (DDD) + número'); return false; }
+  if (!email || !email.includes('@')) { showToast('Informe um e-mail válido'); return false; }
+  return true;
+}
+
+// ---- HELPERS ----
+function toggleCheck(cb, lblId) {
+  const lbl = document.getElementById(lblId);
+  lbl.style.borderColor = cb.checked ? 'var(--blue)' : 'var(--gray-3)';
+  lbl.style.background  = cb.checked ? 'var(--blue-l)' : '';
+}
+function selectOpt(el, name, val) {
+  document.querySelectorAll('input[name="'+name+'"]').forEach(r => r.closest('.radio-opt').classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+// ---- VEÍCULOS ----
+function addVeiculo(pfx) {
+  veiCount[pfx]++;
+  const n = veiCount[pfx];
+  const div = document.createElement('div');
+  div.className = 'item-block';
+  div.id = pfx+'-vei-'+n;
+  div.innerHTML = `
+    <div class="item-block-title">Veículo ${n} <button class="remove-btn" onclick="removeItem('${pfx}-vei-${n}')">Remover</button></div>
+    <div class="field"><label>Tipo</label><select><option>Automóvel</option><option>Motocicleta</option><option>Caminhonete</option><option>Outro</option></select></div>
+    <div class="field-row">
+      <div class="field"><label>Modelo</label><input type="text" placeholder="Civic"/></div>
+      <div class="field"><label>Cor</label><input type="text" placeholder="Branco"/></div>
+    </div>
+    <div class="field"><label>Placa</label><input type="text" placeholder="ABC1D23" style="text-transform:uppercase"/></div>`;
+  document.getElementById(pfx+'-veiculos-list').appendChild(div);
+}
+
+// ---- DEPENDENTES ----
+function addDependente(pfx) {
+  depCount[pfx]++;
+  const n = depCount[pfx];
+  const div = document.createElement('div');
+  div.className = 'item-block';
+  div.id = pfx+'-dep-'+n;
+  div.innerHTML = `
+    <div class="item-block-title">Dependente ${n} <button class="remove-btn" onclick="removeItem('${pfx}-dep-${n}')">Remover</button></div>
+    <div class="field"><label>Nome completo <span class="req">*</span></label><input type="text" placeholder="Nome do dependente"/></div>
+    <div class="field-row">
+      <div class="field"><label>Data de nascimento</label><input type="date"/></div>
+      <div class="field"><label>Parentesco</label><select><option>Cônjuge</option><option>Filho(a)</option><option>Pai/Mãe</option><option>Outro</option></select></div>
+    </div>
+    <div class="field"><label>E-mail</label><input type="email" placeholder="para@receber.senha"/></div>`;
+  document.getElementById(pfx+'-dep-list').appendChild(div);
+}
+
+// ---- PRESTADORES ----
+function addPrestador(pfx) {
+  presCount[pfx]++;
+  const n = presCount[pfx];
+  const div = document.createElement('div');
+  div.className = 'item-block';
+  div.id = pfx+'-pres-'+n;
+  div.innerHTML = `
+    <div class="item-block-title">Prestador ${n} <button class="remove-btn" onclick="removeItem('${pfx}-pres-${n}')">Remover</button></div>
+    <div class="field"><label>Nome</label><input type="text" placeholder="Nome do prestador"/></div>
+    <div class="field"><label>WhatsApp / Celular</label><input type="tel" placeholder="(47) 99999-0000" inputmode="tel"/></div>
+    <div class="field"><label>Tipo de serviço</label><select><option>Diarista</option><option>Cuidador(a)</option><option>Babá</option><option>Outro</option></select></div>
+    <div class="field"><label>Dias</label><input type="text" placeholder="Segunda e sexta"/></div>
+    <div class="field-row">
+      <div class="field"><label>Entrada</label><input type="time"/></div>
+      <div class="field"><label>Saída</label><input type="time"/></div>
+    </div>
+    <div class="field"><label>Período</label><select><option>Indefinido</option><option>1 mês</option><option>3 meses</option><option>6 meses</option></select></div>`;
+  document.getElementById(pfx+'-pres-list').appendChild(div);
+}
+
+function removeItem(id) { const el = document.getElementById(id); if(el) el.remove(); }
+
+// ---- COLETA DE DADOS ----
+function coletarVeiculos(pfx) {
+  const blocks = document.querySelectorAll('[id^="'+pfx+'-vei-"]');
+  const list = [];
+  blocks.forEach(b => {
+    const sel = b.querySelector('select');
+    const inputs = b.querySelectorAll('input');
+    const tipo = sel ? sel.value : '';
+    const modelo = inputs[0] ? inputs[0].value : '';
+    const cor = inputs[1] ? inputs[1].value : '';
+    const placa = inputs[2] ? inputs[2].value : '';
+    if (modelo || placa) list.push(tipo+' — '+modelo+' — '+cor+' — '+placa.toUpperCase());
+  });
+  return list.join('\n') || '—';
+}
+
+function coletarDependentes(pfx) {
+  const blocks = document.querySelectorAll('[id^="'+pfx+'-dep-"]');
+  const list = [];
+  blocks.forEach(b => {
+    const inputs = b.querySelectorAll('input');
+    const sels = b.querySelectorAll('select');
+    const nome = inputs[0] ? inputs[0].value.trim() : '';
+    const nasc = inputs[1] ? inputs[1].value : '';
+    const parentesco = sels[0] ? sels[0].value : '';
+    const email = inputs[2] ? inputs[2].value.trim() : '';
+    if (nome) list.push({ nome, nasc, parentesco, email });
+  });
+  return list;
+}
+
+function coletarPrestadores(pfx) {
+  const blocks = document.querySelectorAll('[id^="'+pfx+'-pres-"]');
+  const list = [];
+  blocks.forEach(b => {
+    const inputs = b.querySelectorAll('input');
+    const sels = b.querySelectorAll('select');
+    const nome = inputs[0] ? inputs[0].value.trim() : '';
+    const tel  = inputs[1] ? inputs[1].value.trim() : '';
+    const tipo = sels[0] ? sels[0].value : '';
+    const dias = inputs[2] ? inputs[2].value : '';
+    const hin  = inputs[3] ? inputs[3].value : '';
+    const hout = inputs[4] ? inputs[4].value : '';
+    const periodo = sels[1] ? sels[1].value : '';
+    if (nome) list.push({ nome, tel, tipo, dias, horario: hin+' às '+hout, periodo });
+  });
+  return list;
+}
+
+// ---- ENVIO ----
+function enviarCadastro(tipo) {
+  let dados = { vinculo: tipo, dataHora: new Date().toLocaleString('pt-BR') };
+
+  if (tipo === 'proprietario') {
+    if (!validarPessoal('prop')) { propStep(2); return; }
+    dados = { ...dados,
+      apto: sanitizarApto(document.getElementById('prop-apto').value) || document.getElementById('prop-apto').value.trim(),
+      nome: sanitizarNome(document.getElementById('prop-nome').value),
+      nascimento: document.getElementById('prop-nasc').value,
+      cpf: document.getElementById('prop-cpf').value.trim(),
+      telefone: document.getElementById('prop-tel').value.trim(),
+      email: document.getElementById('prop-email').value.trim(),
+      termoAceito: document.getElementById('prop-termo').checked,
+      veiculos: coletarVeiculos('prop'),
+      dependentes: coletarDependentes('prop'),
+      prestadores: coletarPrestadores('prop'),
+    };
+  } else if (tipo === 'inquilino') {
+    if (!validarPessoal('inq')) { inqStep(2); return; }
+    dados = { ...dados,
+      apto: document.getElementById('inq-apto').value.trim(),
+      nome: document.getElementById('inq-nome').value.trim(),
+      nascimento: document.getElementById('inq-nasc').value,
+      cpf: document.getElementById('inq-cpf').value.trim(),
+      telefone: document.getElementById('inq-tel').value.trim(),
+      email: document.getElementById('inq-email').value.trim(),
+      nomeProprietario: document.getElementById('inq-prop-nome').value.trim(),
+      termoAceito: document.getElementById('inq-termo').checked,
+      veiculos: coletarVeiculos('inq'),
+      dependentes: coletarDependentes('inq'),
+      prestadores: coletarPrestadores('inq'),
+    };
+  } else if (tipo === 'dependente') {
+    const apto = document.getElementById('dep-apto').value.trim();
+    const nome = document.getElementById('dep-nome').value.trim();
+    const nasc = document.getElementById('dep-nasc').value;
+    const vinculo = document.getElementById('dep-vinculo').value;
+    const resp = document.getElementById('dep-resp').value.trim();
+    if (!apto||!nome||!nasc||!vinculo||!resp) { showToast('Preencha todos os campos obrigatórios'); return; }
+    if (!document.getElementById('dep-termo').checked) { showToast('Aceite o termo de ciência para continuar'); return; }
+    dados = { ...dados, apto, nome,
+      nascimento: nasc,
+      cpf: document.getElementById('dep-cpf').value.trim(),
+      telefone: document.getElementById('dep-tel').value.trim(),
+      email: document.getElementById('dep-email').value.trim(),
+      parentesco: vinculo,
+      nomeResponsavel: resp,
+    };
+  } else if (tipo === 'prop_nao_morador') {
+    const apto  = document.getElementById('pnm-apto').value.trim();
+    const nome  = document.getElementById('pnm-nome').value.trim();
+    const nasc  = document.getElementById('pnm-nasc').value;
+    const tel   = document.getElementById('pnm-tel').value.trim();
+    const email = document.getElementById('pnm-email').value.trim();
+    if (!apto||!nome||!nasc||!tel||!email) { showToast('Preencha todos os campos obrigatórios'); return; }
+    if (!document.getElementById('pnm-termo').checked) { showToast('Aceite o termo de ciência para continuar'); return; }
+    if (!validarTel(tel)) { showToast('WhatsApp inválido — use (DDD) + número'); return; }
+    dados = { ...dados,
+      apto, nome,
+      nascimento:  nasc,
+      cpf:         document.getElementById('pnm-cpf').value.trim(),
+      telefone:    tel,
+      email:       email,
+
+      termoAceito: true
+    };
+  } else if (tipo === 'prestador') {
+    const apto = document.getElementById('pres-apto').value.trim();
+    const nome = document.getElementById('pres-nome').value.trim();
+    const tipoSvc = document.getElementById('pres-tipo').value;
+    const dias = document.getElementById('pres-dias').value.trim();
+    const periodo = document.getElementById('pres-periodo').value;
+    const resp = document.getElementById('pres-resp').value.trim();
+    if (!apto||!nome||!tipoSvc||!dias||!periodo||!resp) { showToast('Preencha todos os campos obrigatórios'); return; }
+    if (!document.getElementById('pres-termo').checked) { showToast('Aceite o termo de ciência para continuar'); return; }
+    dados = { ...dados, apto, nome,
+      telefone: document.getElementById('pres-tel').value.trim(),
+      tipoServico: tipoSvc,
+      dias, horarioEntrada: document.getElementById('pres-hin').value,
+      horarioSaida: document.getElementById('pres-hout').value,
+      periodo, nomeResponsavel: resp,
+      emailResponsavel: document.getElementById('pres-email-resp').value.trim(),
+    };
+  }
+
+  // Prevenir duplo envio
+  if (window._enviando) { showToast('Aguarde, enviando...'); return; }
+  window._enviando = true;
+  document.getElementById('loading').classList.add('show');
+
+  // Timeout de segurança — 30 segundos
+  var timeoutEnvio = setTimeout(function() {
+    window._enviando = false;
+    document.getElementById('loading').classList.remove('show');
+    showToast('Tempo esgotado. Tente novamente.');
+  }, 30000);
+
+  fetch(SCRIPT_URL, {
+    method: 'POST', mode: 'no-cors',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(dados)
+  })
+  .then(() => {
+    clearTimeout(timeoutEnvio);
+    window._enviando = false;
+    document.getElementById('loading').classList.remove('show');
+    mostrarSucesso(dados);
+  })
+  .catch(() => {
+    clearTimeout(timeoutEnvio);
+    window._enviando = false;
+    document.getElementById('loading').classList.remove('show');
+    showToast('Erro ao enviar. Verifique sua conexão e tente novamente.');
+  });
+}
+
+function mostrarSucesso(dados) {
+  const labels = {proprietario:'Proprietário',inquilino:'Inquilino',dependente:'Dependente',prestador:'Prestador de serviço',prop_nao_morador:'Proprietário não morador'};
+  let html = '';
+  if (dados.apto) html += scRow('Apartamento', dados.apto);
+  if (dados.nome) html += scRow('Nome', dados.nome);
+  html += scRow('Vínculo', labels[dados.vinculo] || dados.vinculo);
+  if (dados.email) html += scRow('E-mail', dados.email);
+  if (dados.telefone) html += scRow('WhatsApp', dados.telefone);
+  document.getElementById('success-resumo').innerHTML = html;
+  setProgress(100, 'Cadastro enviado!');
+  showScreen('screen-ok');
+}
+
+function scRow(k,v) { return '<div class="sc-row"><span class="sc-key">'+k+'</span><span class="sc-val">'+v+'</span></div>'; }
+
+function novoAcadastro() {
+  tipoSelecionado = null;
+  propEtapa = 1; inqEtapa = 1;
+  veiCount = {prop:0,inq:0}; depCount = {prop:0,inq:0}; presCount = {prop:0,inq:0};
+  document.querySelectorAll('.tipo-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById('btn-tipo').disabled = true;
+  ['prop-veiculos-list','prop-dep-list','prop-pres-list','inq-veiculos-list','inq-dep-list','inq-pres-list'].forEach(id => {
+    const el = document.getElementById(id); if(el) el.innerHTML='';
+  });
+  document.querySelectorAll('input[type=text],input[type=email],input[type=tel],input[type=date],input[type=time]').forEach(i => i.value='');
+  document.querySelectorAll('input[type=checkbox]').forEach(i => { i.checked=false; });
+  document.querySelectorAll('select').forEach(s => s.selectedIndex=0);
+  document.querySelectorAll('.radio-opt,.check-opt').forEach(o => { o.classList.remove('selected'); o.style.borderColor=''; o.style.background=''; });
+  setProgress(0,'Sistema de cadastro de acesso');
+  showScreen('screen-0');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+</script>
+
+<!-- ============================================================ -->
+<!-- TELA LOGIN MORADOR -->
+<!-- ============================================================ -->
+<div class="screen" id="screen-login-morador">
+  <div class="section-title">Acessar minha área</div>
+  <p style="font-size:13px;color:var(--gray-6);margin-bottom:20px;line-height:1.5">
+    Digite sua senha pessoal de 6 dígitos recebida por e-mail após aprovação do cadastro.
+  </p>
+  <div class="field">
+    <label>Sua senha de acesso</label>
+    <div class="pin-wrap">
+      <input class="pin-digit" type="tel" maxlength="1" inputmode="numeric" oninput="pinInput(this,0)"/>
+      <input class="pin-digit" type="tel" maxlength="1" inputmode="numeric" oninput="pinInput(this,1)"/>
+      <input class="pin-digit" type="tel" maxlength="1" inputmode="numeric" oninput="pinInput(this,2)"/>
+      <input class="pin-digit" type="tel" maxlength="1" inputmode="numeric" oninput="pinInput(this,3)"/>
+      <input class="pin-digit" type="tel" maxlength="1" inputmode="numeric" oninput="pinInput(this,4)"/>
+      <input class="pin-digit" type="tel" maxlength="1" inputmode="numeric" oninput="pinInput(this,5)"/>
+    </div>
+  </div>
+  <div class="btn-row">
+    <button class="btn-secondary" onclick="showScreen('screen-0')">← Início</button>
+    <button class="btn-primary" id="btn-entrar-morador" onclick="entrarMorador()">Entrar →</button>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- DASHBOARD MORADOR -->
+<!-- ============================================================ -->
+<div class="screen" id="screen-area-morador">
+  <div class="morador-header">
+    <h2 id="mor-nome">Olá!</h2>
+    <p id="mor-apto">Carregando...</p>
+  </div>
+
+  <div class="morador-tabs">
+    <button class="morador-tab active" onclick="morTab('meus-dados',this)">Meus dados</button>
+    <button class="morador-tab" onclick="morTab('veiculos',this)">Veículos</button>
+    <button class="morador-tab" onclick="morTab('dependentes',this)">Dependentes</button>
+    <button class="morador-tab" onclick="morTab('prestadores',this)">Prestadores</button>
+  </div>
+
+  <!-- MEUS DADOS -->
+  <div id="mor-meus-dados">
+    <div id="mor-dados-view"></div>
+    <button class="btn-primary" style="width:100%;margin-top:8px;background:var(--green);font-size:16px;padding:14px" onclick="morTab('reservas', document.createElement('button'))">
+      🎉 Reservar Salão de Festas
+    </button>
+    <button class="btn-primary" style="width:100%;margin-top:10px" onclick="editarMeusDados()">✏️ Editar meus dados</button>
+    <div id="mor-dados-edit" style="display:none;margin-top:12px"></div>
+  </div>
+
+  <!-- VEÍCULOS -->
+  <div id="mor-veiculos" style="display:none">
+    <div class="add-card" onclick="abrirAddVeiculo()">+ Adicionar veículo</div>
+    <div id="mor-add-veiculo" style="display:none" class="item-block">
+      <div class="vtitle">Novo veículo</div>
+      <div class="field"><label>Tipo</label><select id="nv-tipo"><option>Automóvel</option><option>Motocicleta</option><option>Caminhonete</option><option>Outro</option></select></div>
+      <div class="field-row">
+        <div class="field"><label>Modelo</label><input type="text" id="nv-modelo" placeholder="Civic"/></div>
+        <div class="field"><label>Cor</label><input type="text" id="nv-cor" placeholder="Branco"/></div>
+      </div>
+      <div class="field"><label>Placa</label><input type="text" id="nv-placa" placeholder="ABC1D23" style="text-transform:uppercase"/></div>
+      <div class="btn-row">
+        <button class="btn-secondary" onclick="document.getElementById('mor-add-veiculo').style.display='none'">Cancelar</button>
+        <button class="btn-primary" onclick="salvarNovoVeiculo()">Salvar</button>
+      </div>
+    </div>
+    <div id="mor-veiculos-list"></div>
+  </div>
+
+  <!-- DEPENDENTES -->
+  <div id="mor-dependentes" style="display:none">
+    <div class="add-card" onclick="abrirAddDependente()">+ Adicionar dependente</div>
+    <div id="mor-add-dep" style="display:none" class="item-block">
+      <div class="vtitle">Novo dependente</div>
+      <div class="field"><label>Nome completo</label><input type="text" id="nd-nome" placeholder="Nome completo"/></div>
+      <div class="field-row">
+        <div class="field"><label>Data nascimento</label><input type="date" id="nd-nasc"/></div>
+        <div class="field"><label>Parentesco</label>
+          <select id="nd-parent"><option>Cônjuge</option><option>Filho(a)</option><option>Pai/Mãe</option><option>Irmão/Irmã</option><option>Outro</option></select>
+        </div>
+      </div>
+      <div class="field"><label>WhatsApp</label><input type="tel" id="nd-tel" placeholder="(47) 99999-0000" oninput="mascaraTel(this)" maxlength="15"/></div>
+      <div class="field"><label>E-mail</label><input type="email" id="nd-email" placeholder="email@exemplo.com"/></div>
+      <div class="btn-row">
+        <button class="btn-secondary" onclick="document.getElementById('mor-add-dep').style.display='none'">Cancelar</button>
+        <button class="btn-primary" onclick="salvarNovoDependente()">Salvar</button>
+      </div>
+    </div>
+    <div id="mor-dep-list"></div>
+  </div>
+
+  <!-- PRESTADORES -->
+  <div id="mor-prestadores" style="display:none">
+    <div class="add-card" onclick="abrirAddPrestador()">+ Adicionar prestador</div>
+    <div id="mor-add-pres" style="display:none" class="item-block">
+      <div class="vtitle">Novo prestador</div>
+      <div class="field"><label>Nome</label><input type="text" id="np-nome" placeholder="Nome do prestador"/></div>
+      <div class="field"><label>Tipo de serviço</label>
+        <select id="np-tipo"><option>Diarista</option><option>Cuidador(a)</option><option>Babá</option><option>Enfermeiro(a)</option><option>Outro</option></select>
+      </div>
+      <div class="field"><label>Dias</label><input type="text" id="np-dias" placeholder="Segunda e sexta"/></div>
+      <div class="field-row">
+        <div class="field"><label>Entrada</label><input type="time" id="np-hin"/></div>
+        <div class="field"><label>Saída</label><input type="time" id="np-hout"/></div>
+      </div>
+      <div class="field"><label>Período</label>
+        <select id="np-periodo"><option>Indefinido</option><option>1 mês</option><option>3 meses</option><option>6 meses</option><option>1 ano</option></select>
+      </div>
+      <div class="btn-row">
+        <button class="btn-secondary" onclick="document.getElementById('mor-add-pres').style.display='none'">Cancelar</button>
+        <button class="btn-primary" onclick="salvarNovoPrestador()">Salvar</button>
+      </div>
+    </div>
+    <div id="mor-pres-list"></div>
+  </div>
+
+  <!-- RESERVAS -->
+  <div id="mor-reservas" style="display:none">
+    <div class="salao-tabs">
+      <button class="salao-tab active" id="stab1" onclick="selecionarSalao('Salão Piso Inferior',this)">🏛 Piso Inferior</button>
+      <button class="salao-tab" id="stab2" onclick="selecionarSalao('Salão Piso Superior',this)">🏛 Piso Superior</button>
+    </div>
+
+    <div class="calendario-wrap">
+      <div class="cal-header">
+        <button class="cal-nav" onclick="navMes(-1)">◀</button>
+        <div class="cal-titulo" id="cal-titulo">—</div>
+        <button class="cal-nav" onclick="navMes(1)">▶</button>
+      </div>
+      <div class="cal-grid" id="cal-grid"></div>
+      <div class="legenda-cal">
+        <div class="legenda-item"><div class="legenda-dot" style="background:var(--red-l);border:1px solid var(--red)"></div>Ocupado</div>
+        <div class="legenda-item"><div class="legenda-dot" style="background:var(--blue)"></div>Selecionado</div>
+        <div class="legenda-item"><div class="legenda-dot" style="background:var(--gray-2);border:1px solid var(--gray-3)"></div>Disponível</div>
+      </div>
+    </div>
+
+    <div id="reserva-form" style="display:none" class="item-block">
+      <div class="vtitle" id="reserva-form-titulo">Confirmar reserva</div>
+      <div id="reserva-form-info" style="font-size:13px;color:var(--gray-6);margin-bottom:12px;line-height:1.5"></div>
+      <div class="field"><label>Observações (opcional)</label>
+        <input type="text" id="res-obs" placeholder="Ex: Aniversário de 15 anos"/>
+      </div>
+      <div id="res-isencao-wrap" style="display:none;margin-bottom:14px">
+        <label class="check-opt" id="res-isencao-lbl">
+          <input type="checkbox" id="res-isencao" onchange="toggleCheck(this,'res-isencao-lbl')">
+          <span>Solicitar isenção da taxa (1ª reserva do ano — sujeito à análise da administração)</span>
+        </label>
+        <div style="font-size:12px;color:var(--gray-6);margin-top:6px;line-height:1.4">
+          ⚠️ A isenção será analisada após o evento. Você receberá um e-mail com o resultado.
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn-secondary" onclick="document.getElementById('reserva-form').style.display='none';dataSelecionada=null;renderCalendario()">Cancelar</button>
+        <button class="btn-primary" onclick="confirmarReserva()">✅ Confirmar reserva</button>
+      </div>
+    </div>
+
+    <div style="margin:16px 0 8px;font-size:13px;font-weight:600;color:var(--gray-6)">Minhas reservas</div>
+    <div id="mor-reservas-list"></div>
+  </div>
+
+  <div style="padding-bottom:24px;margin-top:20px">
+    <button class="btn-secondary" style="width:100%" onclick="sairAreaMorador()">← Sair da minha área</button>
+  </div>
+</div>
+
+
+<!-- RODAPÉ -->
+<div style="text-align:center;padding:24px 16px 32px;border-top:1px solid var(--gray-3);margin-top:8px;background:var(--gray-1)">
+  <div style="font-size:13px;font-weight:700;color:var(--blue);margin-bottom:4px">Condomínio Bella Vista</div>
+  <div style="font-size:12px;color:var(--gray-6);margin-bottom:2px">Sistema de Controle de Acesso v2.35 — Julho/2026</div>
+  <div style="font-size:11px;color:var(--gray-4);margin-top:6px;line-height:1.5">Desenvolvido por Jeferson Wedderhoff usando Claude (Anthropic)</div>
+</div>
+
+</body>
+</html>
