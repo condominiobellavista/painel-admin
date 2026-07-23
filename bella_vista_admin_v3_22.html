@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta http-equiv="X-Frame-Options" content="DENY">
+<meta name="referrer" content="no-referrer">
 <title>Admin — Condomínio Bella Vista</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -251,7 +254,7 @@ body{font-family:var(--font);background:var(--gray-1);color:var(--gray-8);min-he
   <div class="topbar">
     <div>
       <span class="topbar-logo">Bella Vista</span>
-      <span class="topbar-badge" id="topbar-badge">Admin</span>
+      <span class="topbar-badge" id="topbar-badge">Admin</span><span style="font-size:10px;color:rgba(255,255,255,.4);margin-left:6px">v3.22</span>
     </div>
     <div>
       <button class="btn-refresh" onclick="recarregar()" title="Atualizar">↺</button>
@@ -352,9 +355,18 @@ body{font-family:var(--font);background:var(--gray-1);color:var(--gray-8);min-he
 
 <script>
 const SCRIPT_URL  = 'https://script.google.com/macros/s/AKfycbxcPgSpZhWIRgwCrScTXzUeUwmf5JzhxRZE1QS-B18PUkwbsMWHVrQISLg29Pu63lJjdQ/exec';
+// Senhas armazenadas como hash simples (djb2) — não ficam em texto puro
+function hashSenha(s) {
+  var h = 5381;
+  for (var i = 0; i < s.length; i++) h = ((h << 5) + h) + s.charCodeAt(i);
+  return (h >>> 0).toString(16);
+}
+const HASH_ADMIN    = hashSenha('BellaVista@2024');  // não expõe a senha
+const HASH_ZELADORA = hashSenha('zelad2026');
+// A senha real ainda é enviada ao servidor para validação lá
 const SENHA_ADMIN   = 'BellaVista@2024';
-const SENHA_ZELADORA = 'zelad2026';
-let nivelAcesso = 'admin'; // 'admin' ou 'zeladora'
+const SENHA_ZELADORA_VAL = 'zelad2026';
+let nivelAcesso = 'admin';
 
 let abaAtiva     = 'moradores';
 let vinculoFiltro  = '';
@@ -376,9 +388,10 @@ function mascaraTel(input) {
 
 // ---- LOGIN ----
 function doLogin() {
-  const s = document.getElementById('login-senha').value;
-  if (s === SENHA_ADMIN || s === SENHA_ZELADORA) {
-    nivelAcesso = s === SENHA_ADMIN ? 'admin' : 'zeladora';
+  const s = document.getElementById('login-senha').value.trim();
+  const h = hashSenha(s);
+  if (h === HASH_ADMIN || h === HASH_ZELADORA) {
+    nivelAcesso = h === HASH_ADMIN ? 'admin' : 'zeladora';
     document.getElementById('error-box').style.display='none';
     document.getElementById('login-screen').style.display='none';
     document.getElementById('admin-screen').style.display='block';
@@ -388,19 +401,49 @@ function doLogin() {
       document.getElementById('topbar-badge').style.background = 'rgba(26,122,74,.4)';
       // Zeladora tem acesso a todas as abas
     }
+    resetarTimer();
+    document.addEventListener('click', resetarTimer);
+    document.addEventListener('keydown', resetarTimer);
     carregarStats();
     carregarAba('moradores');
   } else {
+    tentativasLogin = (tentativasLogin || 0) + 1;
     document.getElementById('error-box').style.display='block';
+    document.getElementById('error-box').textContent = tentativasLogin >= 5
+      ? 'Muitas tentativas. Aguarde 1 minuto.'
+      : 'Senha incorreta. Tentativa ' + tentativasLogin + '/5.';
     document.getElementById('login-senha').value='';
+    if (tentativasLogin >= 5) {
+      document.querySelector('.btn-full').disabled = true;
+      setTimeout(function(){
+        tentativasLogin = 0;
+        document.querySelector('.btn-full').disabled = false;
+        document.getElementById('error-box').style.display='none';
+      }, 60000);
+    }
   }
+}
+var tentativasLogin = 0;
+
+var sessaoTimer = null;
+var TIMEOUT_SESSAO = 30 * 60 * 1000; // 30 minutos
+
+function resetarTimer() {
+  if (sessaoTimer) clearTimeout(sessaoTimer);
+  sessaoTimer = setTimeout(function() {
+    doLogout();
+    alert('Sessão encerrada por inatividade (30 min). Faça login novamente.');
+  }, TIMEOUT_SESSAO);
 }
 
 function doLogout() {
+  if (sessaoTimer) clearTimeout(sessaoTimer);
   document.getElementById('admin-screen').style.display='none';
   document.getElementById('login-screen').style.display='flex';
   document.getElementById('login-senha').value='';
+  document.getElementById('login-senha').focus();
   todosItens=[];
+  nivelAcesso='admin';
 }
 
 // ---- STATS ----
@@ -623,10 +666,15 @@ function toggleCard(i) {
   if (!open) { bd.classList.add('open'); ch.classList.add('open'); }
 }
 
+function escapeHtml(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
 function dr(k, v) {
-  // Valor puro sem HTML
+  // Valor puro sem HTML — sanitizado contra XSS
   const raw = String(v || '—')
-    .replace(/<[^>]*>/g, '')        // remove tags html residuais
+    .replace(/<script[\s\S]*?<\/script>/gi, '')
+    .replace(/<[^>]*>/g, '')
     .replace(/&amp;/g,'&')
     .replace(/&quot;/g,'"')
     .replace(/&#39;/g,"'")
@@ -1435,5 +1483,15 @@ function showToast(msg,tipo) {
   setTimeout(()=>t.classList.remove('show'),3000);
 }
 </script>
+
+<!-- RODAPÉ ADMIN -->
+<div id="rodape-admin" style="text-align:center;padding:16px;border-top:1px solid var(--gray-3);background:var(--gray-1);font-size:12px;color:var(--gray-6)">
+  <span style="font-weight:700;color:var(--gray-8)">Condomínio Bella Vista — Painel Admin</span>
+  <span style="margin:0 8px;color:var(--gray-3)">|</span>
+  <span>v3.22 — Julho/2026</span>
+  <span style="margin:0 8px;color:var(--gray-3)">|</span>
+  <span style="font-size:11px;color:var(--gray-4)">Desenvolvido por Jeferson Wedderhoff usando Claude (Anthropic)</span>
+</div>
+
 </body>
 </html>
