@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Regimento Interno — Condomínio Edifício Bella Vista</title>
+<style>
+  :root{
+    --azul:#1d4e6f;
+    --azul-claro:#2e6f95;
+    --fundo:#f4f6f8;
+    --card:#ffffff;
+    --texto:#26313a;
+    --texto-suave:#5a6a75;
+    --borda:#e2e8ee;
+    --destaque:#eaf2f7;
+    --num:#2e6f95;
+    --radius:14px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --azul:#4a97c2;
+      --azul-claro:#6bb2d6;
+      --fundo:#12171b;
+      --card:#1b2228;
+      --texto:#e4e9ed;
+      --texto-suave:#9fb0bc;
+      --borda:#2b343c;
+      --destaque:#20303a;
+      --num:#6bb2d6;
+    }
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--fundo);
+    color:var(--texto);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    font-size:17px;
+    line-height:1.65;
+    -webkit-text-size-adjust:100%;
+  }
+  .wrap{max-width:760px;margin:0 auto;padding:0 16px 64px;}
+
+  header.capa{
+    background:linear-gradient(135deg,var(--azul),var(--azul-claro));
+    color:#fff;
+    text-align:center;
+    padding:44px 20px 38px;
+    border-radius:0 0 var(--radius) var(--radius);
+    margin-bottom:24px;
+  }
+  header.capa .selo{
+    font-size:13px;letter-spacing:2px;text-transform:uppercase;
+    opacity:.85;margin-bottom:10px;
+  }
+  header.capa h1{
+    margin:0;font-size:26px;line-height:1.25;font-weight:700;
+  }
+  header.capa .sub{
+    margin-top:8px;font-size:15px;opacity:.9;
+  }
+
+  .intro{
+    background:var(--card);
+    border:1px solid var(--borda);
+    border-radius:var(--radius);
+    padding:20px 22px;
+    margin-bottom:22px;
+    color:var(--texto-suave);
+    font-size:15.5px;
+  }
+  .intro p{margin:0 0 12px;}
+  .intro p:last-child{margin-bottom:0;}
+
+  /* Índice */
+  nav.toc{
+    background:var(--card);
+    border:1px solid var(--borda);
+    border-radius:var(--radius);
+    padding:8px 8px;
+    margin-bottom:26px;
+  }
+  nav.toc summary{
+    cursor:pointer;list-style:none;
+    padding:12px 14px;font-weight:600;color:var(--azul);
+    display:flex;align-items:center;justify-content:space-between;
+  }
+  nav.toc summary::-webkit-details-marker{display:none;}
+  nav.toc summary .chev{transition:transform .2s;font-size:13px;}
+  nav.toc details[open] summary .chev{transform:rotate(180deg);}
+  nav.toc ol{margin:4px 0 10px;padding:0 14px;list-style:none;}
+  nav.toc li{margin:2px 0;}
+  nav.toc a{
+    display:block;padding:9px 12px;border-radius:8px;
+    color:var(--texto);text-decoration:none;font-size:15px;
+  }
+  nav.toc a:hover,nav.toc a:active{background:var(--destaque);color:var(--azul);}
+  nav.toc a .n{color:var(--num);font-weight:600;font-size:13px;margin-right:6px;}
+
+  section.bloco{
+    background:var(--card);
+    border:1px solid var(--borda);
+    border-radius:var(--radius);
+    padding:8px 20px 20px;
+    margin-bottom:20px;
+    scroll-margin-top:14px;
+  }
+  section.bloco > h2{
+    color:var(--azul);
+    font-size:19px;
+    line-height:1.3;
+    margin:18px 0 4px;
+    padding-bottom:12px;
+    border-bottom:2px solid var(--destaque);
+  }
+  .lead{
+    color:var(--texto-suave);
+    font-size:15.5px;
+    margin:14px 0 4px;
+  }
+
+  ol.itens{list-style:none;margin:8px 0 0;padding:0;counter-reset:none;}
+  ol.itens > li{
+    display:flex;
+    gap:12px;
+    padding:14px 0;
+    border-top:1px solid var(--borda);
+  }
+  ol.itens > li:first-child{border-top:none;}
+  ol.itens > li .num{
+    flex:0 0 auto;
+    min-width:30px;height:30px;
+    display:flex;align-items:center;justify-content:center;
+    background:var(--destaque);
+    color:var(--num);
+    font-weight:700;font-size:14px;
+    border-radius:8px;
+    padding:0 6px;
+  }
+  ol.itens > li .corpo{flex:1;min-width:0;}
+  ol.itens > li .corpo > p{margin:0;}
+
+  ul.sub{list-style:none;margin:10px 0 0;padding:0;}
+  ul.sub li{
+    position:relative;
+    padding:4px 0 4px 26px;
+    font-size:15.5px;
+    color:var(--texto);
+  }
+  ul.sub li .letra{
+    position:absolute;left:0;top:4px;
+    color:var(--azul-claro);font-weight:700;
+  }
+  ul.sub ul.sub{margin-top:4px;}
+
+  .dever-box{
+    background:var(--destaque);
+    border-radius:10px;
+    padding:14px 16px;
+    margin:14px 0 4px;
+  }
+  .dever-box .rot{
+    font-weight:700;color:var(--azul);
+    font-size:14px;letter-spacing:.3px;
+    display:block;margin-bottom:8px;text-transform:uppercase;
+  }
+  .dever-box p{margin:0 0 10px;font-size:15.5px;}
+  .dever-box p:last-child{margin-bottom:0;}
+
+  .assinatura{
+    text-align:center;color:var(--texto-suave);
+    font-style:italic;margin:10px 0 30px;font-size:15px;
+  }
+
+  .voltar{
+    display:inline-flex;align-items:center;gap:6px;
+    margin-top:6px;font-size:13px;color:var(--azul-claro);
+    text-decoration:none;
+  }
+  footer{
+    text-align:center;color:var(--texto-suave);
+    font-size:13px;margin-top:20px;
+  }
+  mark{background:transparent;color:var(--azul);font-weight:600;}
+  mark.hit{background:#ffe17a;color:#5a4300;border-radius:3px;padding:0 2px;font-weight:600;}
+  @media (prefers-color-scheme: dark){mark.hit{background:#7a5c00;color:#ffe9a8;}}
+
+  /* Barra de busca fixa */
+  .busca{
+    position:sticky;top:0;z-index:20;
+    background:var(--fundo);
+    padding:12px 0 10px;
+    margin-bottom:6px;
+  }
+  .busca .campo{
+    position:relative;
+    background:var(--card);
+    border:1.5px solid var(--borda);
+    border-radius:999px;
+    display:flex;align-items:center;
+    padding:0 8px 0 16px;
+    box-shadow:0 2px 10px rgba(0,0,0,.05);
+    transition:border-color .15s;
+  }
+  .busca .campo:focus-within{border-color:var(--azul-claro);}
+  .busca .lupa{color:var(--texto-suave);font-size:16px;flex:0 0 auto;}
+  .busca input{
+    flex:1;border:none;background:transparent;outline:none;
+    font-size:16px;color:var(--texto);
+    padding:13px 10px;font-family:inherit;
+  }
+  .busca input::placeholder{color:var(--texto-suave);}
+  .busca .limpar{
+    flex:0 0 auto;border:none;background:var(--destaque);color:var(--azul);
+    width:30px;height:30px;border-radius:50%;font-size:16px;cursor:pointer;
+    display:none;align-items:center;justify-content:center;
+  }
+  .busca .limpar.on{display:flex;}
+  .busca .status{
+    font-size:13px;color:var(--texto-suave);
+    padding:8px 16px 0;min-height:0;
+  }
+  .sem-resultado{
+    display:none;text-align:center;color:var(--texto-suave);
+    background:var(--card);border:1px dashed var(--borda);
+    border-radius:var(--radius);padding:30px 20px;margin-bottom:20px;
+  }
+  li.oculto,section.oculto,.esconde-busca.oculto{display:none !important;}
+</style>
+</head>
+<body>
+<header class="capa">
+  <div class="selo">Condomínio Edifício</div>
+  <h1>Bella Vista</h1>
+  <div class="sub">Regimento Interno · Agosto de 2018</div>
+</header>
+
+<div class="wrap">
+
+  <div class="busca">
+    <div class="campo">
+      <span class="lupa">&#128269;</span>
+      <input id="q" type="search" inputmode="search" autocomplete="off"
+             placeholder="Buscar no regimento (ex.: barulho, garagem, multa, mudança)…"
+             aria-label="Buscar no regimento">
+      <button class="limpar" id="limpar" aria-label="Limpar busca">&times;</button>
+    </div>
+    <div class="status" id="status"></div>
+  </div>
+
+  <div class="sem-resultado" id="semResultado">Nenhuma norma encontrada para a sua busca.</div>
+
+  <div class="intro esconde-busca">
+    <p>O presente regimento interno foi elaborado com a finalidade de disciplinar a conduta e o comportamento dentro da área do condomínio e a proporcionar aos senhores condôminos o máximo de bem estar social e vivência de alto nível. Foi redigido na forma das disposições da lei nº 4591-64 e acata a forma de uso de suas diferentes unidades e partes comuns e impõe deveres e obrigações a todos os condôminos, seus familiares, serviçais, locatários e demais pessoas que possam frequentar o Condomínio Edifício Bella Vista.</p>
+  </div>
+
+  <div class="dever-box esconde-busca">
+    <span class="rot">É dever de todos os condôminos / locatários</span>
+    <p>Prestigiar e fazer acatar as decisões do síndico, conselho consultivo, administrador e das assembléias a estas comparecer, a fim de que decisões tomadas expressam realmente a vontade condominial;</p>
+    <p>Preservar dentro do edifício e áreas do condomínio a mais rigorosa moralidade, decência e respeito, devendo quaisquer queixas serem encaminhadas por escrito à administração ou conselho, tratar com respeito os empregados do condomínio e prestadores de serviços.</p>
+  </div>
+
+  <nav class="toc esconde-busca">
+    <details open>
+      <summary>Índice <span class="chev">▾</span></summary>
+      <ol>
+        <li><a href="#s1"><span class="n">1–26</span>Disposições Gerais</a></li>
+        <li><a href="#s2"><span class="n">27–38</span>Uso das Garagens</a></li>
+        <li><a href="#s3"><span class="n">39–48</span>Salão de Festas / Churrasqueira</a></li>
+        <li><a href="#s4"><span class="n">49–74</span>O que é Proibido</a></li>
+        <li><a href="#s5"><span class="n">75–81</span>Mudanças / Obras / Entregas / Montagens</a></li>
+        <li><a href="#s6"><span class="n">82–90</span>Multas e Penalidades</a></li>
+        <li><a href="#s7"><span class="n">91–94</span>Isenção de Responsabilidade do Condomínio</a></li>
+        <li><a href="#s8"><span class="n">95</span>Atribuições ao Síndico</a></li>
+        <li><a href="#s9"><span class="n">96–102</span>Disposições Gerais (finais)</a></li>
+      </ol>
+    </details>
+  </nav>
+
+  <!-- ============ DISPOSIÇÕES GERAIS ============ -->
+  <section class="bloco" id="s1">
+    <h2>Disposições Gerais</h2>
+    <ol class="itens">
+      <li><span class="num">1</span><div class="corpo"><p>O síndico é responsável por fiscalizar todos os serviços de interesse comum do Edifício e áreas do condomínio, fiscalizando e dirigindo as atribuições de todos os seus empregados, com a colaboração e orientação do conselho consultivo ou administradora;</p></div></li>
+      <li><span class="num">2</span><div class="corpo"><p>O mandato do síndico e do conselho consultivo será de 02 (dois) anos, permitindo-se a reeleição por mais um mandato, sendo que o prazo do mandato sempre será definido em assembléia convocada para a eleição;</p></div></li>
+      <li><span class="num">3</span><div class="corpo"><p>O síndico poderá ser destituído pelo conselho consultivo quando comprovada irregularidade no seu mandato ou por assembléia convocada para esse fim, com presença de no mínimo ⅔ (dois terços) dos condôminos;</p></div></li>
+      <li><span class="num">4</span><div class="corpo"><p>Fica estabelecido que o síndico seja isento de 01 (uma) única taxa condominial mensal, quaisquer outras taxas não se constituirão como isenção;</p></div></li>
+      <li><span class="num">5</span><div class="corpo"><p>As entradas do condomínio (edifício e áreas comuns) deverão permanecer sempre fechadas garantindo assim a segurança e tranquilidade de todos em seu interior, salvo em caso de mudanças (item 80), quando o portão deverá ser aberto e acompanhado pelo responsável. A entrada de conhecidos, parentes, visitas e afins, deverão ser anunciadas através do sistema de interfonia externo;</p></div></li>
+      <li><span class="num">6</span><div class="corpo"><p>O portão de acesso às garagens deverá ser aberto e acompanhado seu fechamento completo pelo condômino/locatário, utilizando-se do controle remoto ou chave manual em caso de pane elétrica ou mal funcionamento do sistema.</p></div></li>
+      <li><span class="num">7</span><div class="corpo"><p>No interior dos apartamentos não poderão ser armazenados explosivos, materiais de fácil combustão (gasolina, pólvora, etc). É proibido usar ou possuir no interior do condomínio tanto quanto nos apartamentos, qualquer material que de qualquer forma possa afetar a saúde, a segurança, o bem estar, a moral e a tranquilidade dos moradores do condomínio.</p></div></li>
+      <li><span class="num">8</span><div class="corpo"><p>Os condôminos deverão aprimorar-se na medida do possível, ou seja, obter conhecimento do manejo correto no uso dos extintores de incêndio, cuidando de que menores de idade não venham a manusear os mesmos.</p></div></li>
+      <li><span class="num">9</span><div class="corpo"><p>O lixo deverá ser acondicionado em sacos plásticos ou material para esse fim, dividindo os resíduos em <mark>ORGÂNICOS</mark> e <mark>RECICLÁVEIS</mark> sendo depositado nos respectivos recintos de coleta para que seja recolhido pela empresa responsável nos dias e horários determinados.</p></div></li>
+      <li><span class="num">10</span><div class="corpo"><p>É proibido depositar (mesmo que por curtos períodos) lixo nos corredores, hall, garagens, pátio ou escadas do condomínio.</p></div></li>
+      <li><span class="num">11</span><div class="corpo"><p>Os elevadores são de uso comum dos moradores do condomínio, seus familiares e visitantes, para o transporte de animais de estimação, materiais, mudanças (vide disposições sobre mudanças), compras, lixos, etc, utilizar o elevador de serviços.</p></div></li>
+      <li><span class="num">12</span><div class="corpo"><p>Qualquer condômino/locatário que necessitar utilizar qualquer um dos elevadores, deverá observar as instruções e recomendações do fabricante, respondendo em caso de dano e inobservância das mesmas, por qualquer acidente, dano ou prejuízo causado.</p></div></li>
+      <li><span class="num">13</span><div class="corpo"><p>Quaisquer movimentação de cargas ou objetos por meio do elevador de serviços, somente poderão ser iniciadas com comunicação prévia de 24 horas ao funcionário responsável do condomínio que repassará as instruções de uso do mesmo.</p></div></li>
+      <li><span class="num">14</span><div class="corpo"><p>Fica sob inteira responsabilidade do condômino/locatário sobre quaisquer dano que possa ocorrer, ocasionados por si mesmo, prestadores de serviços, familiares, visitas e afins nos elevadores, escadas bem como nas áreas comuns do condomínio. Fica sob responsabilidade do síndico/zeladoria, ao constatar qualquer dano ocorrido durante a mudança, o mais breve possível deverá informar o responsável pela mudança para que possam providenciar os reparos necessários.</p></div></li>
+      <li><span class="num">15</span><div class="corpo"><p>É terminantemente proibido a qualquer pessoa, fumar ou portar cigarros acesos ou qualquer ítem semelhante em qualquer área fechada do condomínio (hall, corredores, elevadores, etc).</p></div></li>
+      <li><span class="num">16</span><div class="corpo"><p>Os inquilinos/locatários devem observar este regimento interno por imposição contratual dos condôminos/locadores, porém estes responderão perante o condomínio pelas faltas, infrações e multas oriundas de atos e omissões de seus inquilinos.</p></div></li>
+      <li><span class="num">17</span><div class="corpo"><p>Os condôminos/locatários devem permitir a entrada de pessoas autorizadas pela administração do condomínio em seu apartamento para eventual conserto de defeitos em instalações elétricas ou hidráulicas que estejam prejudicando ou provocando danos às unidades vizinhas. As despesas decorrentes dos consertos ocorrerão por conta dos condôminos e se não for apurado que o defeito seja de ordem particular, mas sim no uso da tubulação de uso comum do prédio, então será por conta do condomínio (haja vista que seja respeitado as garantias legais mantidas em contrato de venda).</p></div></li>
+      <li><span class="num">18</span><div class="corpo"><p>Os condôminos/locatários devem manter as portas de seus apartamentos fechadas, já que em nenhuma hipótese o condomínio poderá ser responsabilizado por furto ou roubo nos apartamentos.</p></div></li>
+      <li><span class="num">19</span><div class="corpo"><p>Toda e qualquer violação deste regimento interno, observada por condôminos/locatários/funcionários deverá ser reportada ao síndico ou conselheiros do condomínio (preferencialmente por escrito).</p></div></li>
+      <li><span class="num">20</span><div class="corpo"><p>É proibido a qualquer empregado do condomínio:</p>
+        <ul class="sub">
+          <li><span class="letra">a.</span>prestar serviços dentro do edifício a qualquer condômino/locatário em seu horário de trabalho;</li>
+          <li><span class="letra">b.</span>correr listas de subscrição ou abaixo assinados de qualquer natureza dentro do edifício e ou oferecer aos condôminos, visitantes, etc.</li>
+          <li><span class="letra">c.</span>cuidar ou responsabilizar-se por locações ou vendas de apartamentos do edifício ou efetuarem cobranças de qualquer natureza.</li>
+        </ul>
+      </div></li>
+      <li><span class="num">21</span><div class="corpo"><p>Todo e qualquer dano ou estrago provocado pelo condômino/locatário, seus dependentes ou empregados particulares nas áreas comuns, serão de sua inteira responsabilidade, devendo ser indenizado o condômino prejudicado.</p></div></li>
+      <li><span class="num">22</span><div class="corpo"><p>Os danos causados dentro dos apartamentos são de inteira responsabilidade dos condôminos/locatários.</p></div></li>
+      <li><span class="num">23</span><div class="corpo"><p>Os moradores não poderão em nenhuma hipótese recorrer aos funcionários do condomínio para execução de serviços particulares;</p></div></li>
+      <li><span class="num">24</span><div class="corpo"><p>Não poderão ser modificadas as formas de seus apartamentos bem como das partes externas da fachada dos apartamentos, janelas, vidros, todos deverão seguir o padrão já existente ou consultar o síndico e o conselho consultivo, antes de qualquer alteração ou modificação para que sejam analisadas junto ao profissional que tem a responsabilidade técnica. Realizar qualquer alteração na estrutura física do apartamento que venha a comprometer a segurança e engenharia do edifício, só serão aceitas com respaldo técnico.</p></div></li>
+      <li><span class="num">25</span><div class="corpo"><p>Os pagamentos (taxas de condomínio, gás, água e outros) serão efetuados através de boletos bancários gerados ao final de cada mês pela contabilidade contratada e enviados por email (ou em via física/impressa se for solicitado). Ficando sob inteira responsabilidade do locador/proprietário/morador a quitação em dia e ou arcar com os juros e mora diária por atrasos ocorridos.</p></div></li>
+      <li><span class="num">26</span><div class="corpo"><p>Animais de estimação são permitidos no interior das áreas individuais, desde que não incomodem os demais moradores, nem gerem desconforto no que diz respeito a higiene e limpeza. Caberá ao Síndico e ao Conselho Consultivo a definição dos problemas apresentados a eles. Cabe ressaltar que eventuais danos causados pelos animais são de inteira responsabilidade de seus proprietários.</p></div></li>
+    </ol>
+    <a class="voltar" href="#s1">↑ Voltar ao índice</a>
+  </section>
+
+  <!-- ============ GARAGENS ============ -->
+  <section class="bloco" id="s2">
+    <h2>Disposição sobre Uso das Garagens</h2>
+    <p class="lead">As garagens mantém seu caráter de área coletiva. Para o uso racional da garagem, as vagas são demarcadas e regulamentadas pelos itens abaixo relacionados:</p>
+    <ol class="itens">
+      <li><span class="num">27</span><div class="corpo"><p>O condômino/locatário, ou usuário não poderá ocupar mais do que a área de vaga que lhe couber por demarcação, observada o direito da escritura, perdendo o direito ao estacionamento enquanto transferir ou alugar sua vaga.</p></div></li>
+      <li><span class="num">28</span><div class="corpo"><p>Os usuários se obrigam a estacionar seu veículo rigorosamente dentro das faixas que demarcam as vagas respectivas, facilitando o estacionamento na vaga vizinha;</p></div></li>
+      <li><span class="num">29</span><div class="corpo"><p>Pequenos reparos e consertos de veículos, só serão permitidos se os veículos pertencerem ao condômino/locatário, dentro dos limites da sua vaga e desde que não coloque em risco a segurança e o fluxo normal de acesso às demais vagas nem a qualquer área comum do condomínio. Obrigando-se a sanar quaisquer danos causados a veículos ou ao condomínio (manchas, riscos, etc).</p></div></li>
+      <li><span class="num">30</span><div class="corpo"><p>O condômino/locatário será responsável por eventuais danos causados a outros veículos ou itens de propriedade de outro condômino/locatário.</p></div></li>
+      <li><span class="num">31</span><div class="corpo"><p>Por motivos de segurança é proibido a permanência de crianças desacompanhadas de um responsável, nas áreas de manobras, garagens e acesso dos carros ou com brinquedos, bicicletas e afins, salvo quando da entrada ou saída de bicicletas do bicicletário do condomínio.</p></div></li>
+      <li><span class="num">32</span><div class="corpo"><p>As vagas de garagem destinam-se ao estacionamento de automóveis, motos, peruas, utilitários, etc, desde que não excedam os limites da referida vaga, sendo proibido seu uso para guardar quaisquer outros objetos (rodas, pneus, bicicletas).</p></div></li>
+      <li><span class="num">33</span><div class="corpo"><p>É recomendado aos condôminos/locatários manobrar seus veículos dentro das garagens sempre com cuidado e com velocidade reduzida, garantindo assim o tempo de reação se acaso algum imprevisto aconteça.</p></div></li>
+      <li><span class="num">34</span><div class="corpo"><p>É proibida a entrada, permanência ou circulação de pessoas estranhas a qualquer morador no interior das áreas comuns. Visitas devem ser acompanhadas na primeira vez que acessarem o condomínio para que não hajam problemas.</p></div></li>
+      <li><span class="num">35</span><div class="corpo"><p>Os condôminos/locatários poderão alugar ou emprestar sua vaga de garagem somente a outros condôminos/locatários (salvo com autorização prévia dos responsáveis pelo condomínio).</p></div></li>
+      <li><span class="num">36</span><div class="corpo"><p>É terminantemente proibido ocupar vagas que não pertençam ao apartamento do condômino/locatário, sem autorização do responsável pela mesma.</p></div></li>
+      <li><span class="num">37</span><div class="corpo"><p>Não é permitido a nenhum condômino/locatário obstruir, total ou parcialmente, qualquer das áreas destinadas a circulação das garagens e áreas comuns.</p></div></li>
+      <li><span class="num">38</span><div class="corpo"><p>Vagas destinadas aos visitantes não poderão ser ocupadas pelos condôminos/locatários em hipótese alguma. Considera-se visitas, carros que permaneçam no máximo 02 (dois) dias consecutivos, posterior a isso, devem providenciar vaga de garagem para permanência dentro do condomínio.</p></div></li>
+    </ol>
+    <a class="voltar" href="#s1">↑ Voltar ao índice</a>
+  </section>
+
+  <!-- ============ SALÃO DE FESTAS ============ -->
+  <section class="bloco" id="s3">
+    <h2>Disposições sobre Uso do Salão de Festas · Churrasqueira</h2>
+    <ol class="itens">
+      <li><span class="num">39</span><div class="corpo"><p>O uso do salão de festas/churrasqueira é exclusivo para moradores do Edifício e destina-se a realização de festividades de cunho familiar bem como reuniões ou eventos de caráter e interesse particular ou do próprio condomínio, sendo de responsabilidade dos órgãos condominiais sua manutenção, conservação e outras atividades necessárias para que o mesmo possa satisfazer a contento os fins específicos a que se destinam. Por outro lado, caberá ao síndico ou funcionário desempenhando a função de zeladoria, a responsabilidade pela limpeza, vistorias antes e após as ocupações agendadas, controle de reservas, elaboração de agendas de ocupações solicitadas, bem como a relação de uma relação de itens da decoração, utensílios e objetos existentes no interior dos ambientes que compõem tais salões de festas.</p></div></li>
+      <li><span class="num">40</span><div class="corpo"><p>Os salões de festa/churrasqueira serão cedidos para os condôminos/locatários mediante ao agendamento prévio, sendo cobrado na próxima taxa condominial a taxa de utilização e limpeza do salão de festas, sendo essa fixada em <mark>R$ 50,00 (cinquenta reais)</mark>. Tal reserva deverá ser feita por meio de anotação no mural, em planilha para esse fim, contendo o dia a ser utilizado, o salão que deseja usar (superior ou inferior) e o número do apartamento que fez a reserva. Os valores arrecadados com tais taxas serão revertidos em melhorias e manutenções dos salões de festas.</p></div></li>
+      <li><span class="num">41</span><div class="corpo"><p>No ato do recebimento das chaves do salão de festas/churrasqueira o solicitante poderá realizar uma inspeção para conferir se há alguma anormalidade, estando sob sua inteira responsabilidade a integridade de todos os itens contidos no salão, quaisquer danos que venham a ocorrer serão integralmente cobrados do responsável pela reserva. Qualquer caso de acidente, dano ou prejuízo, o condômino/locatário terá 72 horas, para o completo ressarcimento dos prejuízos, para sanar os danos causados ou apresentar justificativa por escrito pelo seu não cumprimento.</p></div></li>
+      <li><span class="num">42</span><div class="corpo"><p>Cada apartamento do condomínio terá por direito 01 (uma) vez ao ano, o uso do salão de festas isento da cobrança da taxa de limpeza (vide nº 45), com exceção de feriados Especiais (Natal, Ano Novo, Páscoa).</p></div></li>
+      <li><span class="num">43</span><div class="corpo"><p>Durante as festividades, o condômino/locatário responsável deverá zelar para que os convidados mantenham conduta coerente e respeitosa, de maneira a não ferir a tranquilidade, sossego e a liberdade dos demais condôminos/locatários. Inclusive com relação a utilização de aparelhos de som em volumes inapropriados e ou gritarias exageradas.</p></div></li>
+      <li><span class="num">44</span><div class="corpo"><p>O síndico e o conselho deverão tomar as medidas cabíveis, mesmo as que exijam drasticidade, para o fiel cumprimento do exposto no item anterior, sem prejuízo de suas funções a frente do cargo que ocupa.</p></div></li>
+      <li><span class="num">45</span><div class="corpo"><p>Não poderão reservar os salões de festas/churrasqueiras, condômino/locatário que estejam com suas obrigações condominiais em atraso.</p></div></li>
+      <li><span class="num">46</span><div class="corpo"><p>É proibido qualquer utilizador do salão de festas/churrasqueira se utilizarem de qualquer funcionário do condomínio para trabalhos ou interesses particulares.</p></div></li>
+      <li><span class="num">47</span><div class="corpo"><p>O condômino/locatário que por ocasião da ocupação do salão de festas/churrasqueira, infringir qualquer uma das normas aqui relatadas, permitirem abuso de qualquer ordem por parte dos seus convidados, serviçais, etc, desrespeitarem a autoridade ou instruções do síndico ou seus conselheiros ou de alguma forma vier a causar incômodo ou mal estar para os demais condôminos/locatários ficará sujeito a multas de convenção e a efeitos suspensivos no que tange a futuras reservas do salão de festas/churrasqueira.</p></div></li>
+      <li><span class="num">48</span><div class="corpo"><p>O salão de festas/churrasqueira não poderá ser utilizado para bailes, comemorações estudantis ou agremiações esportivas ou qualquer outra do gênero, mesmo que dela façam parte condôminos/locatários.</p></div></li>
+    </ol>
+    <a class="voltar" href="#s1">↑ Voltar ao índice</a>
+  </section>
+
+  <!-- ============ O QUE É PROIBIDO ============ -->
+  <section class="bloco" id="s4">
+    <h2>Disposições sobre o que é Proibido</h2>
+    <ol class="itens">
+      <li><span class="num">49</span><div class="corpo"><p>Praticar todo e qualquer ato atentatório à moral e que possa prejudicar o valor e a categoria do condomínio, o bem estar, a dignidade de seus moradores.</p></div></li>
+      <li><span class="num">50</span><div class="corpo"><p>Realizar mudanças total ou parcial, sem prévia informação ao síndico ou funcionário no desempenho da função de zeladoria.</p></div></li>
+      <li><span class="num">51</span><div class="corpo"><p>Usar aparelhos térmicos como aquecedores do tipo que não sejam a gás, ou elétricos.</p></div></li>
+      <li><span class="num">52</span><div class="corpo"><p>Lançar papéis, cuspir, jogar cinzas, pontas de cigarro, restos de alimentos, cabelos ou qualquer outros detritos pelas janelas, sacadas. Assim como nos corredores, garagens, elevadores ou qualquer área comum do condomínio.</p></div></li>
+      <li><span class="num">53</span><div class="corpo"><p>Bater / Remover pó de tapetes, etc para fora das janelas ou sacadas.</p></div></li>
+      <li><span class="num">54</span><div class="corpo"><p>Pendurar para o lado externo qualquer objeto, mesmo que de uso pessoal como roupas, tapetes, calçados, cortinas nas janelas ou parapeito das sacadas, deverão ser utilizados varais móveis de piso no interior das sacadas. Devemos zelar pelo Aspecto Visual do Edifício.</p></div></li>
+      <li><span class="num">55</span><div class="corpo"><p>Usar instrumentos que emitam som, ou façam ruídos em desacordo com a lei do silêncio, ou qualquer forma de perturbar o sossego dos demais condôminos, principalmente após as 22:00 ou antes das 08:00. Em casos de reincidência, após comunicados formalmente, será aplicada multa (vide norma 84).</p></div></li>
+      <li><span class="num">56</span><div class="corpo"><p>Usar com volumes exagerados no interior dos apartamentos, aparelhos de som, rádio, televisão, ou qualquer outro aparelho que emita ruídos, arrastar móveis sem protetores anti-ruído nas bases, ou qualquer barulho de serviços gerais como pregos, furadeira ou ferramentas que promovam ruídos que possam perturbar o sossego alheio (vide norma 75).</p></div></li>
+      <li><span class="num">57</span><div class="corpo"><p>Promover sem consentimento da administração do condomínio, festas, reuniões, ensaios, etc em seus apartamentos ou partes comuns com bandas, orquestras ou conjuntos musicais, quaisquer sejam os gêneros de música.</p></div></li>
+      <li><span class="num">58</span><div class="corpo"><p>Gritar, discutir em voz alta, pronunciar palavras de baixo calão, nas dependências do Condomínio ou em tom de voz alto que possam ser ouvidas em outros ambientes, ou cometer quaisquer atos que comprometam o bom nome do Condomínio.</p></div></li>
+      <li><span class="num">59</span><div class="corpo"><p>Alugar, ceder ou usar as unidades autônomas (apartamentos) a não ser para residência familiar.</p></div></li>
+      <li><span class="num">60</span><div class="corpo"><p>Alterar posição de vasos, plantas, decorações e ornamentos sem consentimento da administração do condomínio.</p></div></li>
+      <li><span class="num">61</span><div class="corpo"><p>Mudar de posição, obstruir ou dificultar a captação de imagens pelas câmeras de segurança do circuito fechado de TV (CFTV) do condomínio.</p></div></li>
+      <li><span class="num">62</span><div class="corpo"><p>Circular/andar com bicicletas, patins ou congêneres pelos corredores, hall e áreas de garagens do condomínio (com exceção de entrada e saída da área do bicicletário). Bicicletas não poderão ser transportadas para os apartamentos, devem ser mantidas em local específico para tal uso (bicicletário) sempre com cadeado.</p></div></li>
+      <li><span class="num">63</span><div class="corpo"><p>Instalar antenas de rádio ou TV nas sacadas ou paredes externas dos apartamentos (consultar sobre instalação de novas antenas na cobertura do edifício), não será aceita a instalação de antenas paralelas/gato.</p></div></li>
+      <li><span class="num">64</span><div class="corpo"><p>Lavar vidros, janelas ou sacadas de maneira que possa vir a sujar as paredes do edifício e afetar outros condôminos abaixo.</p></div></li>
+      <li><span class="num">65</span><div class="corpo"><p>Lavar veículos nas dependências do condomínio (exceto limpezas básicas sem uso de mangueiras e afins).</p></div></li>
+      <li><span class="num">66</span><div class="corpo"><p>Permitir a entrada de pessoas estranhas às dependências do Condomínio, a não ser quando devidamente autorizadas por algum condômino responsável.</p></div></li>
+      <li><span class="num">67</span><div class="corpo"><p>Colocar tabuletas / placas / letreiros, salvo placas indicativas de venda ou aluguel, em locais externos, sendo permitidas somente nas janelas ou sacadas (sempre internamente em seu apartamento), nas dimensões de 30x50cm.</p></div></li>
+      <li><span class="num">68</span><div class="corpo"><p>Permitir acesso de pedestres pelos portões de acesso aos veículos, salvo para mudanças e descargas (vide norma 78).</p></div></li>
+      <li><span class="num">69</span><div class="corpo"><p>Deixar de consertar ou de solicitar conserto de torneiras, pontos de gás que estejam com defeito, ou causando vazamentos ou gastos excessivos, colocando em risco a segurança de todos os ocupantes do condomínio.</p></div></li>
+      <li><span class="num">70</span><div class="corpo"><p>Realizar em sua unidade, qualquer instalação elétrica, que importe em sobrecarga a instalação elétrica do edifício sem análise e aprovação por escrito de responsável técnico e consentimento do síndico.</p></div></li>
+      <li><span class="num">71</span><div class="corpo"><p>Depositar o lixo fora de embalagem apropriada ou depositar fora das áreas das lixeiras definidas para coleta pela empresa responsável.</p></div></li>
+      <li><span class="num">72</span><div class="corpo"><p>Autorizar quaisquer alterações nas instalações de telefonia, internet, cabos de tv, água, gás, etc sem conhecimento do síndico e acompanhado pelo responsável pela zeladoria.</p></div></li>
+      <li><span class="num">73</span><div class="corpo"><p>Realizar furações em paredes internas ou externas do edifício para passagem de cabos, dutos, mangueiras, etc em paredes estruturais, colocando em risco a segurança de todos os ocupantes do condomínio;</p></div></li>
+      <li><span class="num">74</span><div class="corpo"><p>O acesso de entregadores no interior do condomínio desacompanhados, o condômino/locatário deverá receber a encomenda na porta de acesso principal acompanhando o entregador no caso de material de difícil movimentação (compras pesadas ou pessoas com mobilidade reduzida), no caso de encomendas maiores, que necessitarão de acesso pelo elevador, deverá informar o responsável pela zeladoria para providenciar a colocação das proteções no interior do elevador. (Entregas de lanches, pizzas, etc, deverão ser recebidas na porta de acesso principal.)</p></div></li>
+    </ol>
+    <a class="voltar" href="#s1">↑ Voltar ao índice</a>
+  </section>
+
+  <!-- ============ MUDANÇAS ============ -->
+  <section class="bloco" id="s5">
+    <h2>Disposições sobre Mudanças / Obras / Entregas / Montagens</h2>
+    <ol class="itens">
+      <li><span class="num">75</span><div class="corpo"><p>O acesso de fornecedores de serviços para, mudanças, entregas, obras, montagem, instalações mesmo que para serviços no interior dos apartamentos deverá ser autorizada pela administração ou zeladoria e acompanhado pelo condômino/locatário, sempre sendo realizado o acesso pelo portão dos fundos, respeitando os seguintes horários:</p>
+        <ul class="sub">
+          <li><span class="letra">a.</span>Segunda a Sexta: das 07:30 às 11:30 / 13:00 às 16:30;</li>
+          <li><span class="letra">b.</span>Sábados: das 08:00 às 13:00 (somente para recebimento de entregas);</li>
+          <li><span class="letra">c.</span>Domingos e feriados são proibidos tais serviços em qualquer horário (salvo casos de emergência e autorizados pelo síndico ou responsável).</li>
+        </ul>
+      </div></li>
+      <li><span class="num">76</span><div class="corpo"><p>Obras / Reformas devem ser informadas aos administradores do condomínio para darem ciência aos demais condôminos por meio de informativo para eventual circulação de pessoal estranho e materiais pelos corredores e áreas comuns (vide norma acima).</p></div></li>
+      <li><span class="num">77</span><div class="corpo"><p>No caso de mudanças ou entregas, solicitar ao funcionário responsável que sejam colocadas as proteções no interior da cabine do elevador de serviços para o transporte de volumes;</p>
+        <ul class="sub">
+          <li><span class="letra">a.</span>não devem ser iniciadas os transportes sem as proteções devidamente instaladas;</li>
+          <li><span class="letra">b.</span>atentar para que não ultrapassem as dimensões e peso máximo permitido na cabine do elevador.</li>
+          <li><span class="letra">c.</span>para transporte pelas escadas, tomar cuidado com batidas nas paredes e escadas, evitando quebras e riscos (tais danos serão informados e posteriormente indenizados pelo condômino responsável);</li>
+        </ul>
+      </div></li>
+      <li><span class="num">78</span><div class="corpo"><p>O acesso de veículos pequenos transportadores de mudanças, entregas, fornecedores, etc, deverá ser feito pelo portão dos fundos e somente será permitida em caráter especial com prévia autorização do síndico, conselheiros ou funcionário encarregado da função e deverá ser estacionado em vaga de visitas.</p></div></li>
+      <li><span class="num">79</span><div class="corpo"><p>Cargas cujas dimensões ou peso não se enquadram para transporte por meio dos elevadores, nem mesmo pelas escadas, somente poderão ser empregadas o uso de cordas e ou cabos para acesso pelo exterior do edifício, por empresa especializada e previamente autorizada pelo Síndico.</p></div></li>
+      <li><span class="num">80</span><div class="corpo"><p>A taxa relativa a mudanças é de <mark>50% (cinquenta por cento) da Taxa de Condomínio vigente</mark>, para mudanças de inquilinos esta taxa será cobrada tanto na entrada quanto na saída de mudanças do Condomínio.</p></div></li>
+      <li><span class="num">81</span><div class="corpo"><p>O condomínio não assume qualquer responsabilidade por danos, prejuízos, acidentes, roubos, etc, de qualquer bem que possa ocorrer durante a mudança, sendo que toda mudança deve ser acompanhada pelo responsável do apartamento.</p></div></li>
+    </ol>
+    <a class="voltar" href="#s1">↑ Voltar ao índice</a>
+  </section>
+
+  <!-- ============ MULTAS E PENALIDADES ============ -->
+  <section class="bloco" id="s6">
+    <h2>Disposições sobre Multas e Penalidades</h2>
+    <ol class="itens">
+      <li><span class="num">82</span><div class="corpo"><p>O condômino/locatário é responsável pelo não cumprimento seu e por seus serviçais, parentes, amigos, convidados e/ou pessoas por ele autorizadas a entrarem no condomínio ao violar qualquer das disposições da lei de condomínio nº 4.591/64 ou de quaisquer normas, itens ou subitens da Convenção e deste Regimento Interno, daquelas estabelecidas em Assembléias Gerais ou pelo síndico, estando sujeito a penalidades legais e da obrigatoriedade de ressarcimento imediato de quaisquer danos ou prejuízos causados ao condomínio, em cada caso, e multa segundo os critérios.</p></div></li>
+      <li><span class="num">83</span><div class="corpo"><p>Cabe ao síndico em conjunto com o conselho consultivo a aplicação das multas ou penalidades estabelecidas por este regimento interno ou pelas assembléias, observando-se o direito de defesa em um prazo máximo de 05 (cinco) dias, após o condomínio ter tomado conhecimento do fato. O silêncio/omissão implicará na aplicação da multa. A multa deve ser informada ao condômino/locatário responsável pela unidade, assim como o motivo gerador da mesma.</p></div></li>
+      <li><span class="num">84</span><div class="corpo"><p>O valor arrecadado das multas aplicadas após a constatação de cada infração ou violação acima citada, será cobrado, partindo-se do valor inicial de 01 (uma) taxa de condomínio vigente, dobrando este valor após a primeira reincidência e dobrando sucessivamente em relação ao valor da última reincidência até o máximo de 03 (três) taxas de condomínio, sem prejuízos das medidas legais cabíveis. Os valores das multas aplicadas serão cobrados juntamente com as taxas condominiais mensais e tais valores serão revertidos ao fundo de caixa do condomínio.</p></div></li>
+      <li><span class="num">85</span><div class="corpo"><p>Reserva-se o direito a cada condômino/locatário penalizado, após efetuar o pagamento correspondente ao valor da multa a ele aplicada, recorrer, por escrito ao condomínio, solicitando a reconsideração da penalidade/multa, a qual será decidida, por ocasião da primeira assembléia do condomínio, após a data do pedido de recurso. Em caso de cancelamento da penalidade, por parte da assembleia, o valor da multa paga será descontada da próxima taxa condominial a vencer (no caso de não existir taxa a vencer, será devolvido em até 05 (cinco) dias, após a data da realização desta assembleia.</p></div></li>
+      <li><span class="num">86</span><div class="corpo"><p>A aplicação das penalidades ou multas estabelecidas neste Regimento Interno não exime o condômino infrator das eventuais penalidades legais que possam vir a ser impostas e nem do seu ressarcimento imediato de todo e qualquer dano ou prejuízo, causado por si ou pelos ocupantes, visitantes sob sua responsabilidade, a qualquer bem de propriedade do condomínio, independente de interpelação judicial ou extrajudicial e igualmente por iniciativa da parte prejudicada aos bens de propriedade particular.</p></div></li>
+      <li><span class="num">87</span><div class="corpo"><p>Caso o infrator se negue a pagar a multa que lhe foi aplicada ou fazer o correspondente ressarcimento dos eventuais danos ou prejuízos causados, no prazo estipulado, poderá o síndico, em nome do condomínio, promover-lhe Ação de Cobrança/Ressarcimento, quando então será cobrada além da multa ou ressarcimentos, as despesas que o acarretam, mais as despesas judiciais e juros legais, correção monetária e honorários advocatícios, revertendo o produto a crédito no fundo de caixa.</p></div></li>
+      <li><span class="num">88</span><div class="corpo"><p>Os condôminos (ou locatários pelos quais é responsável) em débito com suas cotas mensais, de rateios extras ou quaisquer outras obrigações condominiais, ficam sujeito ao juro monetário de <mark>1% (um por cento) ao mês</mark> e multa de <mark>2% (dois por cento)</mark>, mais correção monetária diária.</p></div></li>
+      <li><span class="num">89</span><div class="corpo"><p>O condomínio reserva-se no direito de protestar a partir do vigésimo dia após o vencimento mensal da taxa de condomínio o condômino/locatário quando da inadimplência do pagamento da taxa de condomínio, taxas de consumo de água, gás, benfeitorias, construções ou quaisquer outros serviços aprovados em assembleia ou autorizados pelo Síndico e Conselho Consultivo conforme este regimento; terá o proprietário a partir da terceira parcela de inadimplência quando se tratar de seu inquilino a responsabilidade quanto ao pagamento da mesma, enquanto não se efetivar a cobrança via protesto e ou via judicial, isto se faz necessário em virtude dos gastos fixos do condomínio; O protesto não exime o inadimplente quanto ao pagamento de juros e ou multa por atraso.</p></div></li>
+      <li><span class="num">90</span><div class="corpo"><p>Sob nenhuma forma poderão os condôminos/locatários considerar como renovação ou alteração dos critérios e normas estabelecidas neste Regimento Interno, as eventuais concessões legais, feitas através da assembleia ou por intermédio do Síndico.</p></div></li>
+    </ol>
+    <a class="voltar" href="#s1">↑ Voltar ao índice</a>
+  </section>
+
+  <!-- ============ ISENÇÃO DE RESPONSABILIDADE ============ -->
+  <section class="bloco" id="s7">
+    <h2>Disposições sobre a Isenção de Responsabilidade do Condomínio</h2>
+    <ol class="itens">
+      <li><span class="num">91</span><div class="corpo"><p>O condomínio por si ou seu prepostos não assume responsabilidades por:</p>
+        <ul class="sub">
+          <li><span class="letra">a.</span>acidentes ou danos de ordem pessoal ou material, bem como extravios, estragos, quebra da instalação ou objetos que, em quaisquer condições ou ocasiões sofram os condôminos/locatários e demais moradores ou estranhos dentro do condomínio, não respondendo por objetos ou coisas confiadas a empregados;</li>
+          <li><span class="letra">b.</span>furtos ou roubos que sejam vítimas, dentro do condomínio, os condôminos e demais moradores em quaisquer circunstâncias e ocasiões;</li>
+          <li><span class="letra">c.</span>pela interrupção eventual que se verificar no condomínio em qualquer ocasião de serviços de eletricidade, água, gás, telefonia, internet, elevadores, etc, seja qual for a causa;</li>
+        </ul>
+      </div></li>
+      <li><span class="num">92</span><div class="corpo"><p>Não sendo comprovado negligência ou dolo da administração, o condomínio, por si ou seus prepostos, não assume quaisquer responsabilidades por furtos, danos, prejuízos ou acidentes que venham a sofrer os senhores condôminos/locatários e demais ocupantes de suas frações, visitantes, etc, ou seus pertences.</p></div></li>
+      <li><span class="num">93</span><div class="corpo"><p>Excetuam-se os casos em que ficar clara a por parte dos órgãos condominiais;</p></div></li>
+      <li><span class="num">94</span><div class="corpo"><p>O síndico não é responsável pessoalmente pelas obrigações contraídas em nome do condomínio, desde que tenha agido no exercício regular de suas atribuições.</p></div></li>
+    </ol>
+    <a class="voltar" href="#s1">↑ Voltar ao índice</a>
+  </section>
+
+  <!-- ============ ATRIBUIÇÕES AO SÍNDICO ============ -->
+  <section class="bloco" id="s8">
+    <h2>Disposições sobre Atribuições ao Síndico</h2>
+    <ol class="itens">
+      <li><span class="num">95</span><div class="corpo"><p>Fica autorizado ao síndicos:</p>
+        <ul class="sub">
+          <li><span class="letra">a.</span>cobrar as cotas condominiais e taxas extras aprovadas por assembléia geral;</li>
+          <li><span class="letra">b.</span>receber e dar quitação em nome do condomínio;</li>
+          <li><span class="letra">c.</span>o síndico está isento do pagamento de uma cota mensal condominial durante sua gestão, mas havendo outras chamadas de capital, o mesmos deverá contribuir, assim como outras taxas diversas de consumos;</li>
+          <li><span class="letra">d.</span>movimentar contas bancárias, sendo que:
+            <ul class="sub">
+              <li><span class="letra">i.</span>constarão no cartão de autógrafos o banco as assinaturas do sindico e subsindico;</li>
+              <li><span class="letra">ii.</span>cheques serão assinados pelo síndico e sub-síndico conjuntamente, podendo tanto abrir, encerrar, depositar, sacar e transferir quantias entre contas e poupanças, fazer aplicações, solicitar, receber, emitir e sustar cheques, solicitar extratos e saldos das contas, autorizar e cancelar débitos automáticos de faturas do condomínio em conta corrente, contratar seguro obrigatório do condomínio e serviços de cobrança com estabelecimentos bancários e seguradoras, dar quitação e emitir recibos das contas bancárias e outros administrativos que sejam necessários para a administração do condomínio;</li>
+              <li><span class="letra">iii.</span>cadastrar o condomínio em estabelecimentos comerciais atacadistas ou varejistas e com estes efetuar operações comerciais;</li>
+              <li><span class="letra">iv.</span>para manutenção do edifício, reparos de pequeno porte, o síndico poderá gastar sem prévia autorização até 03 (três) salários mínimos vigentes à época, acima deste valor o Conselho Consultivo deverá ser consultado.</li>
+            </ul>
+          </li>
+        </ul>
+      </div></li>
+    </ol>
+    <a class="voltar" href="#s1">↑ Voltar ao índice</a>
+  </section>
+
+  <!-- ============ DISPOSIÇÕES GERAIS FINAIS ============ -->
+  <section class="bloco" id="s9">
+    <h2>Disposições Gerais (finais)</h2>
+    <ol class="itens">
+      <li><span class="num">96</span><div class="corpo"><p>A cada nova reeleição é permitida a revisão do regimento interno, através de assembléia Geral, com participação de ⅔ (dois terços) dos condôminos; para o bom funcionamento do condomínio, outras normas internas poderão ser criadas, desde que devidamente aprovadas em Assembléias.</p></div></li>
+      <li><span class="num">97</span><div class="corpo"><p>O condomínio manterá contratada, para limpeza, serviços gerais e zeladoria do Condomínio, a quantidade de pessoas que se julgarem necessárias, registrando-as em carteira de trabalho em nome do Condomínio; a(s) pessoa(s) contratada para a função de Zelador(a) terá plenos poderes para alertar, coibir ou proibir qualquer ato que esteja em desacordo com este Regimento Interno, mantendo assim a ordem e organização nas dependências do condomínio e áreas que a ele pertencerem.</p></div></li>
+      <li><span class="num">98</span><div class="corpo"><p>Aparelhos de ar condicionados deverão obedecer ao padrão estabelecido. A marca será de decisão do proprietário; o equipamento deverá ser instalado na parte interna da sacada do apartamento ou telhado no caso do último andar; casos adversos a estes somente com consulta prévia de engenharia da incorporadora responsável pela construção do edifício e análise do Conselho Consultivo.</p></div></li>
+      <li><span class="num">99</span><div class="corpo"><p>Fica definido que para o fechamento de sacadas deverá ser utilizado o modelo de “sacada européia” (REIKI ou SIMILAR), não sendo admitido qualquer outra forma ou modelo de fechamento (salvo impossibilidade de aplicação deste modelo, deve-se consultar o Conselho Consultivo).</p></div></li>
+      <li><span class="num">100</span><div class="corpo"><p>Aplicação de redes de proteção se necessária, deverá ser de modelo aprovado pelo Conselho de cor padrão;</p></div></li>
+      <li><span class="num">101</span><div class="corpo"><p>Os casos omissos neste regimento interno, na convenção do Condomínio ou na Lei de Condomínios, serão resolvidos pelo Conselho Consultivo em assembléia específica para tal fim se necessário.</p></div></li>
+      <li><span class="num">102</span><div class="corpo"><p>Não será aceita por qualquer hipótese, por quem quer que seja, a alegação de desconhecimento das normas estabelecidas neste Regimento Interno, sendo que o mesmo será entregue a cada condôminos/locatários no ato de sua entrada para o Condomínio;</p></div></li>
+    </ol>
+    <a class="voltar" href="#s1">↑ Voltar ao índice</a>
+  </section>
+
+  <p class="assinatura esconde-busca">São Bento do Sul, agosto de 2018.</p>
+
+  <footer>Regimento Interno — Condomínio Edifício Bella Vista · Redigido na forma da Lei nº 4.591/64</footer>
+
+</div>
+
+<script>
+(function(){
+  var q=document.getElementById('q');
+  var limpar=document.getElementById('limpar');
+  var status=document.getElementById('status');
+  var semRes=document.getElementById('semResultado');
+  var itens=Array.prototype.slice.call(document.querySelectorAll('ol.itens > li'));
+  var secoes=Array.prototype.slice.call(document.querySelectorAll('section.bloco'));
+  var esconde=Array.prototype.slice.call(document.querySelectorAll('.esconde-busca'));
+
+  // guarda o texto e o HTML original de cada item
+  itens.forEach(function(li){
+    li._corpo=li.querySelector('.corpo');
+    li._html=li._corpo.innerHTML;
+    li._txt=(li.textContent||'').toLowerCase();
+  });
+
+  function semAcento(s){
+    return s.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
+  }
+  function escReg(s){return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');}
+
+  function marcar(el, termo){
+    // percorre nós de texto e envolve as ocorrências
+    var re=new RegExp('('+escReg(termo)+')','gi');
+    var alvo=semAcento(termo);
+    var walker=document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null);
+    var nodes=[],n;
+    while(n=walker.nextNode()){nodes.push(n);}
+    nodes.forEach(function(node){
+      var txt=node.nodeValue;
+      if(semAcento(txt).indexOf(alvo)===-1) return;
+      // marca usando comparação sem acento, posição a posição
+      var base=semAcento(txt), frag=document.createDocumentFragment();
+      var i=0, tlen=alvo.length, achou;
+      while((achou=base.indexOf(alvo,i))!==-1){
+        if(achou>i) frag.appendChild(document.createTextNode(txt.slice(i,achou)));
+        var mk=document.createElement('mark'); mk.className='hit';
+        mk.textContent=txt.slice(achou,achou+tlen);
+        frag.appendChild(mk);
+        i=achou+tlen;
+      }
+      if(i<txt.length) frag.appendChild(document.createTextNode(txt.slice(i)));
+      node.parentNode.replaceChild(frag, node);
+    });
+  }
+
+  function filtrar(){
+    var raw=q.value.trim();
+    var termo=semAcento(raw);
+    limpar.classList.toggle('on', raw.length>0);
+
+    if(termo.length===0){
+      itens.forEach(function(li){li.classList.remove('oculto'); li._corpo.innerHTML=li._html;});
+      secoes.forEach(function(s){s.classList.remove('oculto');});
+      esconde.forEach(function(e){e.classList.remove('oculto');});
+      semRes.style.display='none';
+      status.textContent='';
+      return;
+    }
+
+    esconde.forEach(function(e){e.classList.add('oculto');});
+    var achados=0;
+    itens.forEach(function(li){
+      var bate=semAcento(li._txt).indexOf(termo)!==-1;
+      li._corpo.innerHTML=li._html; // restaura antes de remarcar
+      if(bate){
+        li.classList.remove('oculto');
+        marcar(li._corpo, raw);
+        achados++;
+      }else{
+        li.classList.add('oculto');
+      }
+    });
+    // esconde seções sem itens visíveis
+    secoes.forEach(function(s){
+      var vis=s.querySelectorAll('ol.itens > li:not(.oculto)').length;
+      s.classList.toggle('oculto', vis===0);
+    });
+    semRes.style.display=achados?'none':'block';
+    status.textContent=achados
+      ? (achados===1?'1 norma encontrada':achados+' normas encontradas')
+      : '';
+  }
+
+  q.addEventListener('input', filtrar);
+  limpar.addEventListener('click', function(){q.value=''; filtrar(); q.focus();});
+})();
+</script>
+</body>
+</html>
