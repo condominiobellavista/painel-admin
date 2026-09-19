@@ -15,6 +15,7 @@ interface MoradorState {
   loading: boolean
   signIn: (code: string) => Promise<string | null>
   signOut: () => void
+  updateMorador: (patch: Partial<MoradorProfile>) => void
 }
 
 const MoradorContext = createContext<MoradorState | null>(null)
@@ -59,8 +60,12 @@ export function MoradorProvider({ children }: { children: ReactNode }) {
     setMorador(null)
   }
 
+  function updateMorador(patch: Partial<MoradorProfile>) {
+    setMorador(prev => prev ? { ...prev, ...patch } : prev)
+  }
+
   return (
-    <MoradorContext.Provider value={{ morador, loading, signIn, signOut }}>
+    <MoradorContext.Provider value={{ morador, loading, signIn, signOut, updateMorador }}>
       {children}
     </MoradorContext.Provider>
   )
