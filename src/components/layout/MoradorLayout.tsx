@@ -6,7 +6,7 @@ const navItems = [
   { to: '/morador/area', label: 'Dados', icon: User, end: true },
   { to: '/morador/area/veiculos', label: 'Veículos', icon: Car },
   { to: '/morador/area/prestadores', label: 'Prestadores', icon: Wrench },
-  { to: '/morador/area/reservas', label: 'Reservas', icon: CalendarRange },
+  { to: '/morador/area/reservas', label: 'Fazer Reserva', icon: CalendarRange },
   { to: '/morador/area/calendario', label: 'Calendário', icon: CalendarDays },
 ]
 
