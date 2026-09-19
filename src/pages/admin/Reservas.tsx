@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { ChevronDown, ChevronUp, CheckCircle, XCircle, Info, AlertTriangle, Lock, Search } from 'lucide-react'
 import { supabase, isDemo } from '@/lib/supabase'
+import { sendEmail, emailReservaConfirmada, emailReservaCancelada } from '@/lib/notifications'
 
 interface Reservation {
   id: string
@@ -8,6 +9,7 @@ interface Reservation {
   hall: string
   use_date: string
   resident_name: string
+  resident_email?: string
   fee: number
   status: 'pendente' | 'confirmada' | 'cancelada'
   exemption: boolean
@@ -79,10 +81,22 @@ export default function AdminReservas() {
 
   async function updateStatus(id: string, newStatus: 'confirmada' | 'cancelada') {
     setSaving(id)
+    const r = reservations.find(x => x.id === id)
     if (!isDemo) {
       await supabase.from('reservations').update({ status: newStatus }).eq('id', id)
     }
-    setReservations(prev => prev.map(r => r.id === id ? { ...r, status: newStatus } : r))
+    setReservations(prev => prev.map(x => x.id === id ? { ...x, status: newStatus } : x))
+    if (r?.resident_email) {
+      const data = r.use_date.split('-')
+      const dateStr = `${data[2]}/${data[1]}/${data[0]}`
+      if (newStatus === 'confirmada') {
+        const tpl = emailReservaConfirmada({ nome: r.resident_name, apto: r.unit_number, data: dateStr, hall: r.hall, taxa: r.fee })
+        await sendEmail({ to: r.resident_email, ...tpl })
+      } else {
+        const tpl = emailReservaCancelada({ nome: r.resident_name, apto: r.unit_number, data: dateStr, hall: r.hall })
+        await sendEmail({ to: r.resident_email, ...tpl })
+      }
+    }
     setSaving(null)
   }
 
