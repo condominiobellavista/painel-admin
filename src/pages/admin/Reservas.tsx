@@ -85,7 +85,7 @@ function exportCSV(reservations: Reservation[], moves: MoveRequest[], taxas: Rec
   })
   lines.push('')
   lines.push('=== TAXA CONFIGURADA ===')
-  HALLS.forEach(h => lines.push(`${h}: R$ ${(taxas[h] ?? 0).toFixed(2).replace('.', ',')}`))
+  ;[...HALLS, 'Mudança'].forEach(h => lines.push(`${h}: R$ ${(taxas[h] ?? 0).toFixed(2).replace('.', ',')}`))
 
   const blob = new Blob(['﻿' + lines.join('\r\n')], { type: 'text/csv;charset=utf-8' })
   const url = URL.createObjectURL(blob)
@@ -105,12 +105,15 @@ export default function AdminReservas() {
   const [busca, setBusca] = useState('')
   const [saving, setSaving] = useState<string | null>(null)
   const [showTaxas, setShowTaxas] = useState(false)
-  const [taxas, setTaxas] = useState<Record<string, number>>({ 'Salão Superior': 150, 'Salão Inferior': 150 })
+  const [taxas, setTaxas] = useState<Record<string, number>>({ 'Salão Superior': 150, 'Salão Inferior': 150, 'Mudança': 0 })
   const [savingTaxa, setSavingTaxa] = useState(false)
 
   useEffect(() => {
     const saved = localStorage.getItem('bv_taxas_salao')
-    if (saved) setTaxas(JSON.parse(saved))
+    if (saved) {
+      const parsed = JSON.parse(saved)
+      setTaxas(prev => ({ ...prev, ...parsed }))
+    }
 
     if (isDemo) {
       setReservations(DEMO_RESERVATIONS)
@@ -213,7 +216,7 @@ export default function AdminReservas() {
         <div className="mb-5 p-4 rounded-2xl" style={{ background: 'var(--color-card)', border: '1px solid var(--color-border-1)' }}>
           <div className="text-xs font-bold uppercase tracking-wider text-[var(--color-text-3)] mb-3">Taxa de uso por salão</div>
           <div className="space-y-3">
-            {HALLS.map(h => (
+            {[...HALLS, 'Mudança'].map(h => (
               <div key={h} className="flex items-center justify-between gap-3">
                 <span className="text-sm font-bold text-[var(--color-text-1)]">{h}</span>
                 <div className="flex items-center gap-2">

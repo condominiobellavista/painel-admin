@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { CalendarRange, Plus, X, CheckCircle, PartyPopper, Truck } from 'lucide-react'
+import { CalendarRange, Plus, X, CheckCircle, PartyPopper, Truck, AlertTriangle } from 'lucide-react'
 import { supabase, isDemo } from '@/lib/supabase'
 import { useMorador } from '@/context/MoradorContext'
 
@@ -77,6 +77,7 @@ export default function MoradorReservas() {
   const [period, setPeriod] = useState<'manha' | 'tarde'>('manha')
 
   const [submitting, setSubmitting] = useState(false)
+  const [cancelling, setCancelling] = useState<string | null>(null)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
 
@@ -173,6 +174,25 @@ export default function MoradorReservas() {
     setSuccess(true)
     setShowForm(false)
     load()
+  }
+
+  function canCancel(eventDate: string) {
+    const diff = (new Date(eventDate + 'T12:00:00').getTime() - Date.now()) / 86400000
+    return diff > 2
+  }
+
+  async function handleCancel(item: Item) {
+    const id = item.id
+    setCancelling(id)
+    if (!isDemo) {
+      if (item.kind === 'salao') {
+        await supabase.rpc('morador_cancel_reservation', { p_code: code, p_id: id })
+      } else {
+        await supabase.rpc('morador_cancel_move', { p_code: code, p_id: id })
+      }
+    }
+    setItems(prev => prev.map(i => i.id === id ? { ...i, status: 'cancelada' } : i))
+    setCancelling(null)
   }
 
   return (
@@ -351,13 +371,17 @@ export default function MoradorReservas() {
         <div className="space-y-3">
           {items.map(item => {
             const isSalao = item.kind === 'salao'
-            const dateStr = formatDate(isSalao ? item.use_date : item.move_date)
+            const eventDate = isSalao ? item.use_date : item.move_date
+            const dateStr = formatDate(eventDate)
             const statusColor = STATUS_COLOR[item.status] ?? 'var(--color-text-3)'
+            const active = item.status !== 'cancelada'
+            const cancellable = active && canCancel(eventDate)
+            const tooCLose = active && !cancellable
             return (
               <div key={`${item.kind}-${item.id}`} className="rounded-2xl p-4"
                 style={{ background: 'var(--color-card)', border: '1px solid var(--color-border-1)' }}>
                 <div className="flex items-start justify-between gap-3">
-                  <div>
+                  <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                       {isSalao
                         ? <PartyPopper size={13} style={{ color: 'var(--color-accent)', flexShrink: 0 }} />
@@ -386,6 +410,26 @@ export default function MoradorReservas() {
                     {STATUS_LABEL[item.status] ?? item.status}
                   </span>
                 </div>
+
+                {/* Cancelamento */}
+                {cancellable && (
+                  <button
+                    onClick={() => handleCancel(item)}
+                    disabled={cancelling === item.id}
+                    className="mt-3 w-full py-2 rounded-xl text-xs font-bold transition disabled:opacity-40"
+                    style={{ background: 'color-mix(in srgb, var(--color-danger) 10%, transparent)', color: 'var(--color-danger)', border: '1px solid color-mix(in srgb, var(--color-danger) 20%, transparent)' }}>
+                    {cancelling === item.id ? 'Cancelando...' : 'Desistir da reserva'}
+                  </button>
+                )}
+                {tooCLose && (
+                  <div className="mt-3 flex items-center gap-2 px-3 py-2 rounded-xl"
+                    style={{ background: 'color-mix(in srgb, var(--color-warning) 8%, transparent)', border: '1px solid color-mix(in srgb, var(--color-warning) 20%, transparent)' }}>
+                    <AlertTriangle size={12} style={{ color: 'var(--color-warning)', flexShrink: 0 }} />
+                    <p className="text-xs" style={{ color: 'var(--color-warning)' }}>
+                      Cancelamento sem custo só até 2 dias antes. Entre em contato com a administração.
+                    </p>
+                  </div>
+                )}
               </div>
             )
           })}
