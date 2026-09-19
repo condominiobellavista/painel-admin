@@ -42,6 +42,7 @@ export default function MoradorReservas() {
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
   const [date, setDate] = useState('')
+  const [hall, setHall] = useState('')
   const [exemption, setExemption] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
@@ -58,6 +59,7 @@ export default function MoradorReservas() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
+    if (!hall) { setError('Selecione o salão.'); return }
     if (!date) { setError('Selecione uma data.'); return }
     const selected = new Date(date + 'T12:00:00')
     if (selected <= new Date()) { setError('A data deve ser futura.'); return }
@@ -75,7 +77,7 @@ export default function MoradorReservas() {
     const { error: rpcErr } = await supabase.rpc('morador_create_reservation', {
       p_code: code,
       p_date: date,
-      p_hall: 'Salão de Festas',
+      p_hall: hall,
       p_fee: exemption ? 0 : TAXA,
       p_exemption: exemption,
     })
@@ -91,6 +93,7 @@ export default function MoradorReservas() {
     setSuccess(true)
     setShowForm(false)
     setDate('')
+    setHall('')
     setExemption(false)
     loadReservations()
   }
@@ -136,6 +139,26 @@ export default function MoradorReservas() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-[10px] uppercase tracking-wider mb-1.5" style={{ color: 'var(--color-text-3)' }}>
+                Salão *
+              </label>
+              <div className="grid grid-cols-2 gap-2">
+                {['Salão Superior', 'Salão Inferior'].map(h => (
+                  <button key={h} type="button"
+                    onClick={() => { setHall(h); setError('') }}
+                    className="py-3 rounded-xl text-sm font-bold transition"
+                    style={{
+                      background: hall === h ? 'var(--color-accent)' : 'var(--color-elevated)',
+                      color: hall === h ? '#fff' : 'var(--color-text-2)',
+                      border: `1px solid ${hall === h ? 'var(--color-accent)' : 'var(--color-border-1)'}`,
+                    }}>
+                    {h === 'Salão Superior' ? '⬆ Superior' : '⬇ Inferior'}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-[10px] uppercase tracking-wider mb-1.5" style={{ color: 'var(--color-text-3)' }}>
                 Data do evento *
               </label>
               <input
@@ -178,7 +201,7 @@ export default function MoradorReservas() {
 
             <button
               type="submit"
-              disabled={submitting || !date}
+              disabled={submitting || !date || !hall}
               className="w-full py-3 rounded-xl text-sm font-bold text-white transition disabled:opacity-40"
               style={{ background: 'var(--color-accent)' }}>
               {submitting ? 'Enviando...' : 'Solicitar reserva'}
