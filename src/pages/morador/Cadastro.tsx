@@ -3,15 +3,26 @@ import { useNavigate } from 'react-router-dom'
 import { supabase, isDemo } from '@/lib/supabase'
 import { Shield } from 'lucide-react'
 
-type Tipo = 'proprietario' | 'prop_nao_morador' | 'inquilino' | 'dep_proprietario' | 'dep_inquilino' | 'prestador' | 'zeladoria' | null
+type Tipo = 'proprietario' | 'prop_nao_morador' | 'inquilino' | 'dep_proprietario' | 'dep_inquilino' | 'prestador' | null
 
 const TIPOS = [
-  { key: 'proprietario', icon: '🏠', label: 'Proprietário', desc: 'Morador no apartamento', role: 'proprietario_morador' },
-  { key: 'prop_nao_morador', icon: '🏘️', label: 'Proprietário', desc: 'Não morador (locador)', role: 'proprietario_nao_morador' },
-  { key: 'inquilino', icon: '🔑', label: 'Inquilino', desc: 'Locatário', role: 'inquilino' },
-  { key: 'dep_proprietario', icon: '👨‍👩‍👧', label: 'Dependente', desc: 'Familiar do proprietário', role: 'dependente' },
-  { key: 'dep_inquilino', icon: '👨‍👩‍👦', label: 'Dependente', desc: 'Familiar do inquilino', role: 'dependente_inquilino' },
+  { key: 'proprietario', icon: '🏠', label: 'Proprietário morador', desc: 'Mora no apartamento que é seu' },
+  { key: 'prop_nao_morador', icon: '🏘️', label: 'Proprietário não morador', desc: 'Dono do imóvel mas não reside' },
+  { key: 'inquilino', icon: '🔑', label: 'Inquilino', desc: 'Locatário do apartamento' },
+  { key: 'dep_proprietario', icon: '👨‍👩‍👧', label: 'Dependente (proprietário)', desc: 'Familiar do proprietário' },
+  { key: 'dep_inquilino', icon: '👨‍👩‍👦', label: 'Dependente (inquilino)', desc: 'Familiar do inquilino' },
+  { key: 'prestador', icon: '🔧', label: 'Prestador de serviço', desc: 'Diarista, cuidador, etc.' },
 ] as const
+
+const SERVICE_TYPES = ['Diarista', 'Cuidador(a)', 'Babá', 'Personal trainer', 'Enfermeiro(a)', 'Outro']
+
+const ROLE_MAP: Record<string, string> = {
+  proprietario: 'proprietario_morador',
+  prop_nao_morador: 'proprietario_nao_morador',
+  inquilino: 'inquilino',
+  dep_proprietario: 'dependente',
+  dep_inquilino: 'dependente_inquilino',
+}
 
 const TERMO = `TERMO DE CIÊNCIA, CONSENTIMENTO E PROTEÇÃO DE DADOS PESSOAIS
 Condomínio Bella Vista
@@ -41,6 +52,9 @@ interface FormData {
   cpf: string
   telefone: string
   email: string
+  // prestador extras
+  serviceType: string
+  serviceDays: string
 }
 
 type Step = 'tipo' | 'termo' | 'dados' | 'sucesso'
@@ -50,9 +64,11 @@ export default function MoradorCadastro() {
   const [tipo, setTipo] = useState<Tipo>(null)
   const [step, setStep] = useState<Step>('tipo')
   const [termoAceito, setTermoAceito] = useState(false)
-  const [form, setForm] = useState<FormData>({ apto: '', nome: '', nasc: '', cpf: '', telefone: '', email: '' })
+  const [form, setForm] = useState<FormData>({ apto: '', nome: '', nasc: '', cpf: '', telefone: '', email: '', serviceType: 'Diarista', serviceDays: '' })
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
+
+  const isPrestador = tipo === 'prestador'
 
   function handleTipoContinue() {
     if (!tipo) return
@@ -72,56 +88,55 @@ export default function MoradorCadastro() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!form.apto.trim() || !form.nome.trim() || !form.email.trim() || !form.telefone.trim()) {
-      setError('Preencha todos os campos obrigatórios')
+      setError('Preencha todos os campos obrigatórios.')
       return
     }
 
-    if (isDemo) {
-      setStep('sucesso')
-      return
-    }
+    if (isDemo) { setStep('sucesso'); return }
 
     setSubmitting(true)
-    // Find or create unit
+
     const { data: unitData } = await supabase
       .from('units')
       .select('id')
       .eq('number', form.apto.trim())
       .maybeSingle()
 
-    const unitId = unitData?.id
-
-    if (!unitId) {
+    if (!unitData?.id) {
       setError('Apartamento não encontrado. Verifique o número e tente novamente.')
       setSubmitting(false)
       return
     }
 
-    const roleMap: Record<string, string> = {
-      proprietario: 'proprietario_morador',
-      prop_nao_morador: 'proprietario_nao_morador',
-      inquilino: 'inquilino',
-      dep_proprietario: 'dependente',
-      dep_inquilino: 'dependente_inquilino',
+    if (isPrestador) {
+      const { error: insertErr } = await supabase.from('service_providers').insert({
+        unit_id: unitData.id,
+        name: form.nome.trim(),
+        service_type: form.serviceType,
+        days: form.serviceDays.trim() || null,
+        phone: form.telefone.trim(),
+        email: form.email.trim(),
+        lgpd_consent: true,
+        status: 'aguardando',
+      })
+      setSubmitting(false)
+      if (insertErr) { setError('Erro ao enviar cadastro: ' + insertErr.message); return }
+    } else {
+      const { error: insertErr } = await supabase.from('residents').insert({
+        unit_id: unitData.id,
+        full_name: form.nome.trim(),
+        birth_date: form.nasc || null,
+        cpf: form.cpf.trim() || null,
+        phone: form.telefone.trim(),
+        email: form.email.trim(),
+        role: ROLE_MAP[tipo!] ?? 'dependente',
+        lgpd_consent: true,
+        status: 'aguardando',
+      })
+      setSubmitting(false)
+      if (insertErr) { setError('Erro ao enviar cadastro: ' + insertErr.message); return }
     }
 
-    const { error: insertErr } = await supabase.from('residents').insert({
-      unit_id: unitId,
-      full_name: form.nome.trim(),
-      birth_date: form.nasc || null,
-      cpf: form.cpf.trim() || null,
-      phone: form.telefone.trim(),
-      email: form.email.trim(),
-      role: roleMap[tipo!] ?? 'dependente',
-      lgpd_consent: true,
-      status: 'aguardando',
-    })
-
-    setSubmitting(false)
-    if (insertErr) {
-      setError('Erro ao enviar cadastro: ' + insertErr.message)
-      return
-    }
     setStep('sucesso')
   }
 
@@ -132,9 +147,12 @@ export default function MoradorCadastro() {
           <div className="text-6xl mb-4">🎉</div>
           <h2 className="text-xl font-black text-[var(--color-text-1)] mb-2">Cadastro enviado!</h2>
           <p className="text-sm text-[var(--color-text-3)] leading-relaxed mb-6">
-            Seu cadastro foi recebido pela administração do condomínio. Após a aprovação, você receberá sua senha de acesso por e-mail.
+            {isPrestador
+              ? 'Seu cadastro foi recebido. Após aprovação da administração, você receberá sua senha de acesso por e-mail.'
+              : 'Seu cadastro foi recebido pela administração. Após a aprovação, você receberá sua senha de acesso por e-mail.'}
           </p>
-          <div className="bg-[var(--color-accent-light)] border border-[var(--color-accent)]/20 rounded-xl p-4 mb-6 text-sm text-[var(--color-accent)] text-left">
+          <div className="rounded-xl p-4 mb-6 text-sm text-left"
+            style={{ background: 'color-mix(in srgb, var(--color-accent) 8%, transparent)', border: '1px solid color-mix(in srgb, var(--color-accent) 20%, transparent)', color: 'var(--color-accent)' }}>
             <div className="font-bold mb-1">📬 Próximos passos</div>
             <ul className="space-y-1 text-xs leading-relaxed">
               <li>• A administração revisará seu cadastro</li>
@@ -142,10 +160,9 @@ export default function MoradorCadastro() {
               <li>• Com a senha em mãos, faça login na sua área</li>
             </ul>
           </div>
-          <button
-            onClick={() => navigate('/morador')}
-            className="w-full bg-[var(--color-accent)] text-white font-bold py-4 rounded-2xl"
-          >
+          <button onClick={() => navigate('/morador')}
+            className="w-full font-bold py-4 rounded-2xl text-white"
+            style={{ background: 'var(--color-accent)' }}>
             Voltar ao início
           </button>
         </div>
@@ -154,36 +171,37 @@ export default function MoradorCadastro() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-[var(--color-base)] px-4 py-6">
+    <div className="flex flex-col min-h-screen px-4 py-6" style={{ background: 'var(--color-base)' }}>
       <div className="w-full max-w-sm mx-auto">
         <button
           onClick={() => (step === 'tipo' ? navigate('/morador') : setStep(step === 'dados' ? 'termo' : 'tipo'))}
-          className="flex items-center gap-1.5 text-[var(--color-accent)] text-sm font-semibold mb-6"
-        >
+          className="flex items-center gap-1.5 text-sm font-semibold mb-6"
+          style={{ color: 'var(--color-accent)' }}>
           ← Voltar
         </button>
 
         {/* Step indicator */}
         <div className="flex items-center justify-between mb-6 text-xs text-[var(--color-text-3)]">
-          {['tipo', 'termo', 'dados'].map((s, i) => (
+          {(['tipo', 'termo', 'dados'] as Step[]).map((s, i) => (
             <div key={s} className="flex items-center gap-1">
-              <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
-                s === step ? 'bg-[var(--color-accent)] text-white' :
-                ['tipo', 'termo', 'dados'].indexOf(step) > i ? 'bg-[var(--color-success)] text-white' :
-                'bg-[var(--color-elevated)] text-[var(--color-text-3)]'
-              }`}>{i + 1}</div>
-              {i < 2 && <div className="w-8 h-px bg-[var(--color-border-1)]" />}
+              <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold"
+                style={{
+                  background: s === step ? 'var(--color-accent)' : (['tipo', 'termo', 'dados'] as Step[]).indexOf(step) > i ? 'var(--color-success)' : 'var(--color-elevated)',
+                  color: s === step || (['tipo', 'termo', 'dados'] as Step[]).indexOf(step) > i ? '#fff' : 'var(--color-text-3)',
+                }}>
+                {i + 1}
+              </div>
+              {i < 2 && <div className="w-8 h-px" style={{ background: 'var(--color-border-1)' }} />}
             </div>
           ))}
-          <span className="ml-2">
-            {step === 'tipo' ? 'Tipo' : step === 'termo' ? 'Termo' : 'Dados'}
-          </span>
+          <span className="ml-2">{step === 'tipo' ? 'Tipo' : step === 'termo' ? 'Termo' : 'Dados'}</span>
         </div>
 
         {/* STEP 1: Tipo */}
         {step === 'tipo' && (
           <div>
-            <div className="bg-[var(--color-accent-light)] border border-[var(--color-accent)]/20 rounded-xl p-3 flex gap-2 mb-5 text-sm text-[var(--color-accent)]">
+            <div className="rounded-xl p-3 flex gap-2 mb-5 text-sm"
+              style={{ background: 'color-mix(in srgb, var(--color-accent) 8%, transparent)', border: '1px solid color-mix(in srgb, var(--color-accent) 20%, transparent)', color: 'var(--color-accent)' }}>
               <Shield size={16} className="flex-shrink-0 mt-0.5" />
               Seus dados são protegidos conforme a LGPD — Lei 13.709/2018.
             </div>
@@ -195,27 +213,24 @@ export default function MoradorCadastro() {
                 <button
                   key={t.key}
                   onClick={() => setTipo(t.key as Tipo)}
-                  className={`w-full flex items-center gap-4 p-4 rounded-xl border-2 transition-colors text-left ${
-                    tipo === t.key
-                      ? 'border-[var(--color-accent)] bg-[var(--color-accent-light)]'
-                      : 'border-[var(--color-border-1)] bg-[var(--color-card)] hover:border-[var(--color-border-2)]'
-                  }`}
-                >
+                  className="w-full flex items-center gap-4 p-4 rounded-xl text-left transition-colors"
+                  style={{
+                    border: `2px solid ${tipo === t.key ? 'var(--color-accent)' : 'var(--color-border-1)'}`,
+                    background: tipo === t.key ? 'color-mix(in srgb, var(--color-accent) 8%, transparent)' : 'var(--color-card)',
+                  }}>
                   <span className="text-2xl flex-shrink-0">{t.icon}</span>
-                  <div>
+                  <div className="flex-1">
                     <div className="text-sm font-bold text-[var(--color-text-1)]">{t.label}</div>
                     <div className="text-xs text-[var(--color-text-3)] mt-0.5">{t.desc}</div>
                   </div>
-                  {tipo === t.key && <div className="ml-auto w-4 h-4 rounded-full bg-[var(--color-accent)] flex-shrink-0" />}
+                  {tipo === t.key && <div className="w-4 h-4 rounded-full flex-shrink-0" style={{ background: 'var(--color-accent)' }} />}
                 </button>
               ))}
             </div>
 
-            <button
-              onClick={handleTipoContinue}
-              disabled={!tipo}
-              className="w-full mt-5 bg-[var(--color-accent)] disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold py-4 rounded-2xl transition-colors"
-            >
+            <button onClick={handleTipoContinue} disabled={!tipo}
+              className="w-full mt-5 text-white font-bold py-4 rounded-2xl transition-colors disabled:opacity-40"
+              style={{ background: 'var(--color-accent)' }}>
               Continuar →
             </button>
           </div>
@@ -225,25 +240,21 @@ export default function MoradorCadastro() {
         {step === 'termo' && (
           <div>
             <h2 className="text-lg font-black text-[var(--color-text-1)] mb-4">Termo de ciência</h2>
-            <div className="bg-[var(--color-card)] border border-[var(--color-border-1)] rounded-xl p-4 h-56 overflow-y-auto mb-4 text-xs text-[var(--color-text-3)] leading-relaxed whitespace-pre-wrap font-mono">
+            <div className="rounded-xl p-4 h-56 overflow-y-auto mb-4 text-xs leading-relaxed whitespace-pre-wrap font-mono"
+              style={{ background: 'var(--color-card)', border: '1px solid var(--color-border-1)', color: 'var(--color-text-3)' }}>
               {TERMO}
             </div>
-            <label className="flex items-start gap-3 cursor-pointer mb-5 p-3 bg-[var(--color-card)] rounded-xl border border-[var(--color-border-1)]">
-              <input
-                type="checkbox"
-                checked={termoAceito}
-                onChange={e => setTermoAceito(e.target.checked)}
-                className="mt-0.5 accent-[var(--color-accent)] w-4 h-4 flex-shrink-0"
-              />
+            <label className="flex items-start gap-3 cursor-pointer mb-5 p-3 rounded-xl"
+              style={{ background: 'var(--color-card)', border: '1px solid var(--color-border-1)' }}>
+              <input type="checkbox" checked={termoAceito} onChange={e => setTermoAceito(e.target.checked)}
+                className="mt-0.5 w-4 h-4 flex-shrink-0" style={{ accentColor: 'var(--color-accent)' }} />
               <span className="text-sm text-[var(--color-text-2)] leading-relaxed">
                 Li, estou ciente e concordo com os termos acima, incluindo as disposições da LGPD relativas ao tratamento dos meus dados pessoais
               </span>
             </label>
-            <button
-              onClick={handleTermoContinue}
-              disabled={!termoAceito}
-              className="w-full bg-[var(--color-accent)] disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold py-4 rounded-2xl transition-colors"
-            >
+            <button onClick={handleTermoContinue} disabled={!termoAceito}
+              className="w-full text-white font-bold py-4 rounded-2xl transition-colors disabled:opacity-40"
+              style={{ background: 'var(--color-accent)' }}>
               Continuar →
             </button>
           </div>
@@ -252,104 +263,107 @@ export default function MoradorCadastro() {
         {/* STEP 3: Dados */}
         {step === 'dados' && (
           <form onSubmit={handleSubmit}>
-            <h2 className="text-lg font-black text-[var(--color-text-1)] mb-5">Seus dados pessoais</h2>
+            <h2 className="text-lg font-black text-[var(--color-text-1)] mb-5">
+              {isPrestador ? 'Dados do prestador' : 'Seus dados pessoais'}
+            </h2>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-[var(--color-text-3)] mb-1.5 uppercase tracking-wider">
-                  Número do apartamento <span className="text-[var(--color-danger)]">*</span>
+                <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: 'var(--color-text-3)' }}>
+                  {isPrestador ? 'Apartamento que atende' : 'Número do apartamento'} <span style={{ color: 'var(--color-danger)' }}>*</span>
                 </label>
-                <input
-                  type="text"
-                  inputMode="numeric"
-                  placeholder="Ex: 101"
-                  value={form.apto}
-                  onChange={e => set('apto', e.target.value)}
-                  className="w-full bg-[var(--color-card)] border border-[var(--color-border-1)] focus:border-[var(--color-accent)] rounded-xl px-4 py-3 text-sm text-[var(--color-text-1)] placeholder:text-[var(--color-text-3)] outline-none transition-colors"
-                />
+                <input type="text" inputMode="numeric" placeholder="Ex: 101"
+                  value={form.apto} onChange={e => set('apto', e.target.value)}
+                  className="w-full rounded-xl px-4 py-3 text-sm outline-none transition-colors"
+                  style={{ background: 'var(--color-card)', border: '1px solid var(--color-border-1)', color: 'var(--color-text-1)' }} />
+                {isPrestador && (
+                  <p className="text-xs mt-1" style={{ color: 'var(--color-text-3)' }}>Informe o apartamento do contratante.</p>
+                )}
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-[var(--color-text-3)] mb-1.5 uppercase tracking-wider">
-                  Nome completo <span className="text-[var(--color-danger)]">*</span>
+                <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: 'var(--color-text-3)' }}>
+                  Nome completo <span style={{ color: 'var(--color-danger)' }}>*</span>
                 </label>
-                <input
-                  type="text"
-                  autoComplete="name"
-                  placeholder="Seu nome completo"
-                  value={form.nome}
-                  onChange={e => set('nome', e.target.value)}
-                  className="w-full bg-[var(--color-card)] border border-[var(--color-border-1)] focus:border-[var(--color-accent)] rounded-xl px-4 py-3 text-sm text-[var(--color-text-1)] placeholder:text-[var(--color-text-3)] outline-none transition-colors"
-                />
+                <input type="text" autoComplete="name" placeholder="Seu nome completo"
+                  value={form.nome} onChange={e => set('nome', e.target.value)}
+                  className="w-full rounded-xl px-4 py-3 text-sm outline-none transition-colors"
+                  style={{ background: 'var(--color-card)', border: '1px solid var(--color-border-1)', color: 'var(--color-text-1)' }} />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-semibold text-[var(--color-text-3)] mb-1.5 uppercase tracking-wider">
-                    Data de nascimento
-                  </label>
-                  <input
-                    type="date"
-                    value={form.nasc}
-                    onChange={e => set('nasc', e.target.value)}
-                    className="w-full bg-[var(--color-card)] border border-[var(--color-border-1)] focus:border-[var(--color-accent)] rounded-xl px-4 py-3 text-sm text-[var(--color-text-1)] outline-none transition-colors"
-                  />
+              {isPrestador ? (
+                <>
+                  <div>
+                    <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: 'var(--color-text-3)' }}>
+                      Tipo de serviço <span style={{ color: 'var(--color-danger)' }}>*</span>
+                    </label>
+                    <select value={form.serviceType} onChange={e => set('serviceType', e.target.value)}
+                      className="w-full rounded-xl px-4 py-3 text-sm outline-none transition-colors"
+                      style={{ background: 'var(--color-card)', border: '1px solid var(--color-border-1)', color: 'var(--color-text-1)' }}>
+                      {SERVICE_TYPES.map(s => <option key={s} value={s}>{s}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: 'var(--color-text-3)' }}>
+                      Dias de acesso
+                    </label>
+                    <input type="text" placeholder="Ex: Segunda e Quarta"
+                      value={form.serviceDays} onChange={e => set('serviceDays', e.target.value)}
+                      className="w-full rounded-xl px-4 py-3 text-sm outline-none transition-colors"
+                      style={{ background: 'var(--color-card)', border: '1px solid var(--color-border-1)', color: 'var(--color-text-1)' }} />
+                  </div>
+                </>
+              ) : (
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: 'var(--color-text-3)' }}>
+                      Data de nascimento
+                    </label>
+                    <input type="date" value={form.nasc} onChange={e => set('nasc', e.target.value)}
+                      className="w-full rounded-xl px-4 py-3 text-sm outline-none transition-colors"
+                      style={{ background: 'var(--color-card)', border: '1px solid var(--color-border-1)', color: 'var(--color-text-1)' }} />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: 'var(--color-text-3)' }}>
+                      CPF
+                    </label>
+                    <input type="text" inputMode="numeric" placeholder="000.000.000-00" maxLength={14}
+                      value={form.cpf} onChange={e => set('cpf', e.target.value)}
+                      className="w-full rounded-xl px-4 py-3 text-sm outline-none transition-colors"
+                      style={{ background: 'var(--color-card)', border: '1px solid var(--color-border-1)', color: 'var(--color-text-1)' }} />
+                  </div>
                 </div>
-                <div>
-                  <label className="block text-xs font-semibold text-[var(--color-text-3)] mb-1.5 uppercase tracking-wider">
-                    CPF
-                  </label>
-                  <input
-                    type="text"
-                    inputMode="numeric"
-                    placeholder="000.000.000-00"
-                    maxLength={14}
-                    value={form.cpf}
-                    onChange={e => set('cpf', e.target.value)}
-                    className="w-full bg-[var(--color-card)] border border-[var(--color-border-1)] focus:border-[var(--color-accent)] rounded-xl px-4 py-3 text-sm text-[var(--color-text-1)] placeholder:text-[var(--color-text-3)] outline-none transition-colors"
-                  />
-                </div>
+              )}
+
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: 'var(--color-text-3)' }}>
+                  WhatsApp <span style={{ color: 'var(--color-danger)' }}>*</span>
+                </label>
+                <input type="tel" inputMode="tel" placeholder="(47) 99999-0000"
+                  value={form.telefone} onChange={e => set('telefone', e.target.value)}
+                  className="w-full rounded-xl px-4 py-3 text-sm outline-none transition-colors"
+                  style={{ background: 'var(--color-card)', border: '1px solid var(--color-border-1)', color: 'var(--color-text-1)' }} />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-[var(--color-text-3)] mb-1.5 uppercase tracking-wider">
-                  WhatsApp <span className="text-[var(--color-danger)]">*</span>
+                <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: 'var(--color-text-3)' }}>
+                  E-mail <span style={{ color: 'var(--color-danger)' }}>*</span>
                 </label>
-                <input
-                  type="tel"
-                  inputMode="tel"
-                  placeholder="(47) 99999-0000"
-                  value={form.telefone}
-                  onChange={e => set('telefone', e.target.value)}
-                  className="w-full bg-[var(--color-card)] border border-[var(--color-border-1)] focus:border-[var(--color-accent)] rounded-xl px-4 py-3 text-sm text-[var(--color-text-1)] placeholder:text-[var(--color-text-3)] outline-none transition-colors"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-[var(--color-text-3)] mb-1.5 uppercase tracking-wider">
-                  E-mail <span className="text-[var(--color-danger)]">*</span>
-                </label>
-                <input
-                  type="email"
-                  autoComplete="email"
-                  placeholder="seu@email.com"
-                  value={form.email}
-                  onChange={e => set('email', e.target.value)}
-                  className="w-full bg-[var(--color-card)] border border-[var(--color-border-1)] focus:border-[var(--color-accent)] rounded-xl px-4 py-3 text-sm text-[var(--color-text-1)] placeholder:text-[var(--color-text-3)] outline-none transition-colors"
-                />
-                <p className="text-xs text-[var(--color-text-3)] mt-1.5">
+                <input type="email" autoComplete="email" placeholder="seu@email.com"
+                  value={form.email} onChange={e => set('email', e.target.value)}
+                  className="w-full rounded-xl px-4 py-3 text-sm outline-none transition-colors"
+                  style={{ background: 'var(--color-card)', border: '1px solid var(--color-border-1)', color: 'var(--color-text-1)' }} />
+                <p className="text-xs mt-1.5" style={{ color: 'var(--color-text-3)' }}>
                   Você receberá sua senha de acesso neste e-mail após aprovação.
                 </p>
               </div>
             </div>
 
-            {error && <p className="mt-4 text-sm text-[var(--color-danger)]">{error}</p>}
+            {error && <p className="mt-4 text-sm" style={{ color: 'var(--color-danger)' }}>{error}</p>}
 
-            <button
-              type="submit"
-              disabled={submitting}
-              className="w-full mt-6 bg-[var(--color-accent)] disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold py-4 rounded-2xl transition-colors"
-            >
+            <button type="submit" disabled={submitting}
+              className="w-full mt-6 text-white font-bold py-4 rounded-2xl transition-colors disabled:opacity-40"
+              style={{ background: 'var(--color-accent)' }}>
               {submitting ? 'Enviando...' : 'Enviar cadastro'}
             </button>
           </form>
