@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { ChevronDown, ChevronUp, CheckCircle, XCircle, Info, AlertTriangle, Lock, Search, Settings, Download } from 'lucide-react'
 import { supabase, isDemo } from '@/lib/supabase'
-import { sendEmail, emailReservaConfirmada, emailReservaCancelada } from '@/lib/notifications'
+import { sendEmail, emailReservaConfirmada, emailReservaCancelada, emailIsencaoDeferida, emailIsencaoNegada } from '@/lib/notifications'
 
 interface Reservation {
   id: string
@@ -250,6 +250,15 @@ export default function AdminReservas() {
       : { exemption: false, eligible_exempt: false, fee: originalFee }
     if (!isDemo) await supabase.from('reservations').update(update).eq('id', id)
     setReservations(prev => prev.map(x => x.id === id ? { ...x, ...update } : x))
+    const res = reservations.find(x => x.id === id)
+    if (res?.resident_email) {
+      const dateStr = formatDate(res.use_date)
+      if (approved) {
+        await sendEmail({ to: res.resident_email, ...emailIsencaoDeferida({ nome: res.resident_name, apto: res.unit_number, data: dateStr, hall: res.hall }) })
+      } else {
+        await sendEmail({ to: res.resident_email, ...emailIsencaoNegada({ nome: res.resident_name, apto: res.unit_number, data: dateStr, hall: res.hall, taxa: originalFee }) })
+      }
+    }
     setSaving(null)
   }
 
