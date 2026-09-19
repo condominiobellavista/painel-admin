@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useMorador } from '@/context/MoradorContext'
-import { User, Mail, Phone, Building2, Pencil, Check, X, Loader2 } from 'lucide-react'
+import { User, Mail, Phone, Building2, FileText, Calendar, Pencil, Check, X, Loader2 } from 'lucide-react'
 import { supabase, isDemo } from '@/lib/supabase'
 
 const roleLabel: Record<string, string> = {
@@ -11,16 +11,47 @@ const roleLabel: Record<string, string> = {
   dependente_inquilino: 'Dependente (inquilino)',
 }
 
+function InfoRow({ icon, label, value }: { icon: React.ReactNode; label: string; value?: string }) {
+  return (
+    <div className="flex items-center gap-3 px-5 py-3.5">
+      <div className="text-[var(--color-text-3)] flex-shrink-0">{icon}</div>
+      <div>
+        <div className="text-[11px] text-[var(--color-text-3)] uppercase tracking-wider font-semibold">{label}</div>
+        <div className="text-sm font-semibold text-[var(--color-text-1)] mt-0.5">{value || '—'}</div>
+      </div>
+    </div>
+  )
+}
+
+function Field({ label, value, onChange, placeholder, type = 'text' }: {
+  label: string; value: string; onChange: (v: string) => void; placeholder?: string; type?: string
+}) {
+  return (
+    <div>
+      <label className="block text-xs font-semibold text-[var(--color-text-3)] uppercase tracking-wider mb-1.5">{label}</label>
+      <input type={type} value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder}
+        className="w-full px-3 py-2.5 bg-[var(--color-elevated)] border border-[var(--color-border-1)] rounded-xl text-sm text-[var(--color-text-1)] placeholder:text-[var(--color-text-3)] focus:outline-none focus:border-[var(--color-accent)] transition" />
+    </div>
+  )
+}
+
 export default function MoradorDados() {
   const { morador, code, updateMorador } = useMorador()
+
   const [editing, setEditing] = useState(false)
-  const [phone, setPhone] = useState(morador?.phone ?? '')
-  const [email, setEmail] = useState(morador?.email ?? '')
+  const [name, setName] = useState('')
+  const [cpf, setCpf] = useState('')
+  const [birthDate, setBirthDate] = useState('')
+  const [phone, setPhone] = useState('')
+  const [email, setEmail] = useState('')
   const [saving, setSaving] = useState(false)
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   function startEdit() {
+    setName(morador?.name ?? '')
+    setCpf(morador?.cpf ?? '')
+    setBirthDate(morador?.birth_date ?? '')
     setPhone(morador?.phone ?? '')
     setEmail(morador?.email ?? '')
     setSuccess(false)
@@ -28,30 +59,28 @@ export default function MoradorDados() {
     setEditing(true)
   }
 
-  function cancel() {
-    setEditing(false)
-    setError(null)
-  }
+  function cancel() { setEditing(false); setError(null) }
 
   async function save() {
     if (isDemo) {
-      updateMorador({ phone: phone || undefined, email: email || undefined })
-      setEditing(false)
-      setSuccess(true)
+      updateMorador({ name: name || undefined, cpf: cpf || undefined, birth_date: birthDate || undefined, phone: phone || undefined, email: email || undefined })
+      setEditing(false); setSuccess(true)
+      setTimeout(() => setSuccess(false), 4000)
       return
     }
-    setSaving(true)
-    setError(null)
-    const { error: err } = await supabase.rpc('morador_update_contact', {
+    setSaving(true); setError(null)
+    const { error: err } = await supabase.rpc('morador_update_profile', {
       p_code: code!,
+      p_name: name,
+      p_cpf: cpf,
+      p_birth_date: birthDate,
       p_phone: phone,
       p_email: email,
     })
     setSaving(false)
     if (err) { setError('Erro ao salvar. Tente novamente.'); return }
-    updateMorador({ phone: phone || undefined, email: email || undefined })
-    setEditing(false)
-    setSuccess(true)
+    updateMorador({ name: name || undefined, cpf: cpf || undefined, birth_date: birthDate || undefined, phone: phone || undefined, email: email || undefined })
+    setEditing(false); setSuccess(true)
     setTimeout(() => setSuccess(false), 4000)
   }
 
@@ -67,6 +96,7 @@ export default function MoradorDados() {
         </div>
       )}
 
+      {/* Card de dados */}
       <div className="bg-[var(--color-card)] border border-[var(--color-border-1)] rounded-2xl overflow-hidden mb-4">
         <div className="bg-[var(--color-elevated)] px-5 py-4 flex items-center gap-3">
           <div className="w-10 h-10 rounded-full flex items-center justify-center"
@@ -81,30 +111,15 @@ export default function MoradorDados() {
           </div>
         </div>
         <div className="divide-y divide-[var(--color-border-0)]">
-          <div className="flex items-center gap-3 px-5 py-3.5">
-            <Building2 size={15} className="text-[var(--color-text-3)]" />
-            <div>
-              <div className="text-[11px] text-[var(--color-text-3)] uppercase tracking-wider font-semibold">Apartamento</div>
-              <div className="text-sm font-semibold text-[var(--color-text-1)] mt-0.5">{morador?.unit || '—'}</div>
-            </div>
-          </div>
-          <div className="flex items-center gap-3 px-5 py-3.5">
-            <Mail size={15} className="text-[var(--color-text-3)]" />
-            <div>
-              <div className="text-[11px] text-[var(--color-text-3)] uppercase tracking-wider font-semibold">E-mail</div>
-              <div className="text-sm font-semibold text-[var(--color-text-1)] mt-0.5">{morador?.email || '—'}</div>
-            </div>
-          </div>
-          <div className="flex items-center gap-3 px-5 py-3.5">
-            <Phone size={15} className="text-[var(--color-text-3)]" />
-            <div>
-              <div className="text-[11px] text-[var(--color-text-3)] uppercase tracking-wider font-semibold">WhatsApp</div>
-              <div className="text-sm font-semibold text-[var(--color-text-1)] mt-0.5">{morador?.phone || '—'}</div>
-            </div>
-          </div>
+          <InfoRow icon={<Building2 size={15} />} label="Apartamento" value={morador?.unit} />
+          <InfoRow icon={<FileText size={15} />} label="CPF" value={morador?.cpf} />
+          <InfoRow icon={<Calendar size={15} />} label="Data de nascimento" value={morador?.birth_date} />
+          <InfoRow icon={<Mail size={15} />} label="E-mail" value={morador?.email} />
+          <InfoRow icon={<Phone size={15} />} label="WhatsApp" value={morador?.phone} />
         </div>
       </div>
 
+      {/* Card de edição */}
       <div className="bg-[var(--color-card)] border border-[var(--color-border-1)] rounded-2xl overflow-hidden">
         <div className="px-5 py-4 border-b border-[var(--color-border-0)] flex items-center justify-between">
           <span className="text-xs font-bold uppercase tracking-[0.1em] text-[var(--color-text-3)]">Alterar dados</span>
@@ -118,21 +133,20 @@ export default function MoradorDados() {
         <div className="p-5">
           {!editing ? (
             <p className="text-sm text-[var(--color-text-3)] leading-relaxed">
-              Você pode atualizar seu e-mail e telefone a qualquer momento.
-              {success && <span className="block mt-2 text-xs font-semibold" style={{ color: 'var(--color-success)' }}>✓ Dados atualizados.</span>}
+              Você pode atualizar seus dados cadastrais a qualquer momento.
+              {success && (
+                <span className="block mt-2 text-xs font-semibold" style={{ color: 'var(--color-success)' }}>
+                  ✓ Dados atualizados com sucesso.
+                </span>
+              )}
             </p>
           ) : (
             <div className="space-y-4">
-              <div>
-                <label className="block text-xs font-semibold text-[var(--color-text-3)] uppercase tracking-wider mb-1.5">E-mail</label>
-                <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="seu@email.com"
-                  className="w-full px-3 py-2.5 bg-[var(--color-elevated)] border border-[var(--color-border-1)] rounded-xl text-sm text-[var(--color-text-1)] placeholder:text-[var(--color-text-3)] focus:outline-none focus:border-[var(--color-accent)] transition" />
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-[var(--color-text-3)] uppercase tracking-wider mb-1.5">WhatsApp</label>
-                <input type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="(47) 99999-9999"
-                  className="w-full px-3 py-2.5 bg-[var(--color-elevated)] border border-[var(--color-border-1)] rounded-xl text-sm text-[var(--color-text-1)] placeholder:text-[var(--color-text-3)] focus:outline-none focus:border-[var(--color-accent)] transition" />
-              </div>
+              <Field label="Nome completo" value={name} onChange={setName} placeholder="Seu nome completo" />
+              <Field label="CPF" value={cpf} onChange={setCpf} placeholder="000.000.000-00" />
+              <Field label="Data de nascimento" value={birthDate} onChange={setBirthDate} placeholder="DD/MM/AAAA" />
+              <Field label="E-mail" value={email} onChange={setEmail} placeholder="seu@email.com" type="email" />
+              <Field label="WhatsApp" value={phone} onChange={setPhone} placeholder="(47) 99999-9999" type="tel" />
               {error && <p className="text-xs" style={{ color: 'var(--color-danger)' }}>{error}</p>}
               <div className="flex gap-2 pt-1">
                 <button onClick={save} disabled={saving}
