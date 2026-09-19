@@ -21,7 +21,6 @@ import MoradorDados from '@/pages/morador/area/Dados'
 import MoradorVeiculos from '@/pages/morador/area/Veiculos'
 import MoradorPrestadores from '@/pages/morador/area/Prestadores'
 import MoradorReservas from '@/pages/morador/area/Reservas'
-import MoradorCalendario from '@/pages/morador/area/Calendario'
 
 function AdminProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth()
@@ -78,7 +77,6 @@ export default function App() {
         <Route path="veiculos" element={<MoradorVeiculos />} />
         <Route path="prestadores" element={<MoradorPrestadores />} />
         <Route path="reservas" element={<MoradorReservas />} />
-        <Route path="calendario" element={<MoradorCalendario />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/admin" replace />} />
