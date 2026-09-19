@@ -63,37 +63,118 @@ function formatDate(s: string) {
   return `${d}/${m}/${y}`
 }
 
-function exportCSV(reservations: Reservation[], moves: MoveRequest[], taxas: Record<string, number>) {
-  const lines: string[] = []
-  lines.push('RELATÓRIO MENSAL — SERVIÇOS COBRÁVEIS NO BOLETO')
-  lines.push(`Gerado em: ${new Date().toLocaleDateString('pt-BR')} ${new Date().toLocaleTimeString('pt-BR')}`)
-  lines.push('')
-  lines.push('=== RESERVAS DO SALÃO ===')
-  lines.push('Apto,Morador,Salão,Data,Taxa,Status')
-  const resvsCobraveis = reservations.filter(r => r.status !== 'cancelada')
-  resvsCobraveis.forEach(r => {
-    lines.push(`${r.unit_number},"${r.resident_name}","${r.hall}",${formatDate(r.use_date)},R$ ${Number(r.fee).toFixed(2).replace('.', ',')},${r.status === 'confirmada' ? 'Confirmada' : 'Pendente'}`)
-  })
-  const totalReservas = resvsCobraveis.reduce((s, r) => s + Number(r.fee), 0)
-  lines.push(`,,,,TOTAL: R$ ${totalReservas.toFixed(2).replace('.', ',')}`)
-  lines.push('')
-  lines.push('=== MUDANÇAS ===')
-  lines.push('Apto,Morador,Tipo,Data,Período,Status')
-  const mudsCobraveis = moves.filter(m => m.status !== 'cancelada')
-  mudsCobraveis.forEach(m => {
-    lines.push(`${m.unit_number},"${m.resident_name}",${m.type === 'entrada' ? 'Entrada' : 'Saída'},${formatDate(m.move_date)},${m.period === 'manha' ? 'Manhã' : 'Tarde'},${m.status === 'aprovada' ? 'Aprovada' : 'Pendente'}`)
-  })
-  lines.push('')
-  lines.push('=== TAXA CONFIGURADA ===')
-  ;[...HALLS, 'Mudança'].forEach(h => lines.push(`${h}: R$ ${(taxas[h] ?? 0).toFixed(2).replace('.', ',')}`))
+function statusBadge(s: string) {
+  const map: Record<string, string> = {
+    confirmada: '#166534', pendente: '#854d0e', cancelada: '#991b1b', aprovada: '#166534',
+  }
+  const bg: Record<string, string> = {
+    confirmada: '#dcfce7', pendente: '#fef9c3', cancelada: '#fee2e2', aprovada: '#dcfce7',
+  }
+  const label: Record<string, string> = {
+    confirmada: 'Confirmada', pendente: 'Aguardando', cancelada: 'Cancelada', aprovada: 'Aprovada',
+  }
+  return `<span style="background:${bg[s]??'#f3f4f6'};color:${map[s]??'#374151'};padding:2px 8px;border-radius:99px;font-size:11px;font-weight:700">${label[s]??s}</span>`
+}
 
-  const blob = new Blob(['﻿' + lines.join('\r\n')], { type: 'text/csv;charset=utf-8' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = `relatorio-servicos-${new Date().toISOString().slice(0, 7)}.csv`
-  a.click()
-  URL.revokeObjectURL(url)
+function exportPDF(reservations: Reservation[], moves: MoveRequest[], taxas: Record<string, number>) {
+  const mes = new Date().toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })
+  const gerado = `${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`
+
+  const resvsCobraveis = reservations.filter(r => r.status !== 'cancelada')
+  const mudsCobraveis  = moves.filter(m => m.status !== 'cancelada')
+  const totalReservas  = resvsCobraveis.reduce((s, r) => s + Number(r.fee), 0)
+
+  const trReservas = resvsCobraveis.length === 0
+    ? `<tr><td colspan="6" style="text-align:center;color:#6b7280;padding:16px">Nenhuma reserva no período</td></tr>`
+    : resvsCobraveis.map(r => `
+      <tr>
+        <td>${r.unit_number}</td>
+        <td>${r.resident_name}</td>
+        <td>${r.hall}</td>
+        <td>${formatDate(r.use_date)}</td>
+        <td style="text-align:right">${r.fee === 0 ? '<em>Isento</em>' : `R$ ${Number(r.fee).toFixed(2).replace('.', ',')}`}</td>
+        <td style="text-align:center">${statusBadge(r.status)}</td>
+      </tr>`).join('')
+
+  const trMudancas = mudsCobraveis.length === 0
+    ? `<tr><td colspan="5" style="text-align:center;color:#6b7280;padding:16px">Nenhuma mudança no período</td></tr>`
+    : mudsCobraveis.map(m => `
+      <tr>
+        <td>${m.unit_number}</td>
+        <td>${m.resident_name}</td>
+        <td>${m.type === 'entrada' ? '📦 Entrada' : '🚛 Saída'}</td>
+        <td>${formatDate(m.move_date)} · ${m.period === 'manha' ? 'Manhã' : 'Tarde'}</td>
+        <td style="text-align:center">${statusBadge(m.status)}</td>
+      </tr>`).join('')
+
+  const trTaxas = [...HALLS, 'Mudança'].map(h => `
+    <tr>
+      <td>${h}</td>
+      <td style="text-align:right;font-weight:700">R$ ${(taxas[h] ?? 0).toFixed(2).replace('.', ',')}</td>
+    </tr>`).join('')
+
+  const html = `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Relatório ${mes}</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0 }
+  body { font-family: 'Segoe UI', Arial, sans-serif; color: #111; padding: 32px; font-size: 13px; }
+  .header { border-bottom: 3px solid #1e40af; padding-bottom: 16px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: flex-end }
+  .header h1 { font-size: 20px; font-weight: 800; color: #1e40af }
+  .header p { font-size: 11px; color: #6b7280 }
+  h2 { font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; color: #374151; background: #f3f4f6; padding: 8px 12px; margin: 24px 0 0; border-radius: 6px 6px 0 0; border: 1px solid #e5e7eb; border-bottom: none }
+  table { width: 100%; border-collapse: collapse; border: 1px solid #e5e7eb; border-radius: 0 0 6px 6px; overflow: hidden }
+  th { background: #f9fafb; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: #6b7280; padding: 8px 12px; text-align: left; border-bottom: 1px solid #e5e7eb }
+  td { padding: 9px 12px; border-bottom: 1px solid #f3f4f6; color: #374151 }
+  tr:last-child td { border-bottom: none }
+  tr:hover td { background: #f9fafb }
+  .total-row td { font-weight: 800; background: #eff6ff; color: #1e40af; border-top: 2px solid #bfdbfe }
+  .footer { margin-top: 32px; padding-top: 16px; border-top: 1px solid #e5e7eb; display: flex; justify-content: space-between; font-size: 11px; color: #9ca3af }
+  @media print { body { padding: 16px } @page { margin: 1.5cm } }
+</style>
+</head>
+<body>
+<div class="header">
+  <div>
+    <h1>Condomínio Edifício Bella Vista</h1>
+    <p>Relatório mensal de serviços cobráveis — ${mes}</p>
+  </div>
+  <p>Gerado em ${gerado}</p>
+</div>
+
+<h2>Reservas do Salão de Festas</h2>
+<table>
+  <thead><tr><th>Apto</th><th>Morador</th><th>Salão</th><th>Data</th><th style="text-align:right">Taxa</th><th style="text-align:center">Status</th></tr></thead>
+  <tbody>
+    ${trReservas}
+    ${resvsCobraveis.length > 0 ? `<tr class="total-row"><td colspan="4" style="text-align:right">Total cobrado em reservas:</td><td style="text-align:right">R$ ${totalReservas.toFixed(2).replace('.', ',')}</td><td></td></tr>` : ''}
+  </tbody>
+</table>
+
+<h2>Mudanças Agendadas</h2>
+<table>
+  <thead><tr><th>Apto</th><th>Morador</th><th>Tipo</th><th>Data / Período</th><th style="text-align:center">Status</th></tr></thead>
+  <tbody>${trMudancas}</tbody>
+</table>
+
+<h2>Taxas Vigentes</h2>
+<table>
+  <thead><tr><th>Serviço</th><th style="text-align:right">Valor</th></tr></thead>
+  <tbody>${trTaxas}</tbody>
+</table>
+
+<div class="footer">
+  <span>Condomínio Edifício Bella Vista — São Bento do Sul/SC</span>
+  <span>Documento gerado automaticamente pelo painel administrativo</span>
+</div>
+<script>window.onload = () => window.print()</script>
+</body>
+</html>`
+
+  const w = window.open('', '_blank')
+  if (w) { w.document.write(html); w.document.close() }
 }
 
 export default function AdminReservas() {
@@ -197,7 +278,7 @@ export default function AdminReservas() {
         </div>
         <div className="flex gap-2 flex-shrink-0">
           <button
-            onClick={() => exportCSV(reservations, moves, taxas)}
+            onClick={() => exportPDF(reservations, moves, taxas)}
             className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition"
             style={{ background: 'color-mix(in srgb, var(--color-success) 12%, transparent)', color: 'var(--color-success)', border: '1px solid color-mix(in srgb, var(--color-success) 25%, transparent)' }}>
             <Download size={13} /> Exportar
