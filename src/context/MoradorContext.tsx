@@ -42,13 +42,15 @@ export function MoradorProvider({ children }: { children: ReactNode }) {
 
     if (error) return 'Erro ao verificar o código. Tente novamente.'
     if (!data) return 'Código não encontrado ou acesso não aprovado.'
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const d = data as any
     setMorador({
-      id: data.id,
-      name: data.full_name,
-      unit: (data.units as { number: string } | null)?.number ?? '',
-      role: data.role,
-      email: data.email ?? undefined,
-      phone: data.phone ?? undefined,
+      id: d.id,
+      name: d.full_name,
+      unit: d.units?.number ?? '',
+      role: d.role,
+      email: d.email ?? undefined,
+      phone: d.phone ?? undefined,
     })
     return null
   }
