@@ -3,6 +3,7 @@ import { supabase, isDemo } from '@/lib/supabase'
 
 export interface MoradorProfile {
   id: string
+  unit_id: string
   name: string
   unit: string
   role: string
@@ -12,6 +13,7 @@ export interface MoradorProfile {
 
 interface MoradorState {
   morador: MoradorProfile | null
+  code: string | null
   loading: boolean
   signIn: (code: string) => Promise<string | null>
   signOut: () => void
@@ -22,13 +24,15 @@ const MoradorContext = createContext<MoradorState | null>(null)
 
 export function MoradorProvider({ children }: { children: ReactNode }) {
   const [morador, setMorador] = useState<MoradorProfile | null>(null)
+  const [code, setCode] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
-  async function signIn(code: string): Promise<string | null> {
-    if (code.trim().length !== 6) return 'O código deve ter exatamente 6 dígitos'
+  async function signIn(inputCode: string): Promise<string | null> {
+    if (inputCode.trim().length !== 6) return 'O código deve ter exatamente 6 dígitos'
 
     if (isDemo) {
-      setMorador({ id: 'demo', name: 'Demo Morador', unit: '101', role: 'proprietario_morador', email: 'morador@bellavista.app' })
+      setCode('000000')
+      setMorador({ id: 'demo', unit_id: 'demo-unit', name: 'Demo Morador', unit: '101', role: 'proprietario_morador', email: 'morador@bellavista.app' })
       return null
     }
 
@@ -36,17 +40,19 @@ export function MoradorProvider({ children }: { children: ReactNode }) {
     const { data, error } = await supabase
       .from('residents')
       .select('id, full_name, unit_id, role, email, phone, units(number)')
-      .eq('access_code', code.trim())
+      .eq('access_code', inputCode.trim())
       .eq('status', 'aprovado')
       .maybeSingle()
     setLoading(false)
 
     if (error) return 'Erro ao verificar o código. Tente novamente.'
     if (!data) return 'Código não encontrado ou acesso não aprovado.'
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     const d = data as any
+    setCode(inputCode.trim())
     setMorador({
       id: d.id,
+      unit_id: d.unit_id,
       name: d.full_name,
       unit: d.units?.number ?? '',
       role: d.role,
@@ -58,6 +64,7 @@ export function MoradorProvider({ children }: { children: ReactNode }) {
 
   function signOut() {
     setMorador(null)
+    setCode(null)
   }
 
   function updateMorador(patch: Partial<MoradorProfile>) {
@@ -65,7 +72,7 @@ export function MoradorProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <MoradorContext.Provider value={{ morador, loading, signIn, signOut, updateMorador }}>
+    <MoradorContext.Provider value={{ morador, code, loading, signIn, signOut, updateMorador }}>
       {children}
     </MoradorContext.Provider>
   )
