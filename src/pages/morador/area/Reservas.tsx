@@ -86,6 +86,7 @@ export default function MoradorReservas() {
     if (rpcErr) {
       if (rpcErr.message.includes('inadimplente')) setError('Sua unidade está inadimplente e não pode fazer reservas.')
       else if (rpcErr.message.includes('bloqueada')) setError('Sua unidade está bloqueada. Entre em contato com a administração.')
+      else if (rpcErr.message.includes('já está reservado')) setError(`${hall} já está reservado nesta data. Escolha outra data ou o outro salão.`)
       else setError('Erro ao solicitar reserva. Tente novamente.')
       return
     }
