@@ -140,7 +140,7 @@ export default function MoradorReservas() {
       if (!isDemo) {
         const { error: rpcErr } = await supabase.rpc('morador_create_reservation', {
           p_code: code, p_date: date, p_hall: hall,
-          p_fee: exemption ? 0 : TAXA, p_exemption: exemption,
+          p_fee: TAXA, p_exemption: exemption,
         })
         setSubmitting(false)
         if (rpcErr) {

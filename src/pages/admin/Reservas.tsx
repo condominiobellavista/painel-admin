@@ -243,8 +243,17 @@ export default function AdminReservas() {
 
   async function decideExemption(id: string, approved: boolean) {
     setSaving(id)
-    if (!isDemo) await supabase.from('reservations').update({ exemption: approved, fee: approved ? 0 : undefined }).eq('id', id)
-    setReservations(prev => prev.map(r => r.id === id ? { ...r, exemption: approved, fee: approved ? 0 : r.fee } : r))
+    const r = reservations.find(x => x.id === id)
+    const newFee = approved ? 0 : (r?.fee ?? 150)
+    if (!isDemo) {
+      await supabase.from('reservations').update({
+        exemption: approved,
+        fee: newFee,
+      }).eq('id', id)
+    }
+    setReservations(prev => prev.map(x =>
+      x.id === id ? { ...x, exemption: approved, fee: newFee } : x
+    ))
     setSaving(null)
   }
 
@@ -420,20 +429,24 @@ export default function AdminReservas() {
                         </div>
                       )}
 
-                      {r.exemption && r.status === 'pendente' && r.eligible_exempt && (
+                      {/* Isenção — decisão independente da confirmação */}
+                      {r.exemption && r.fee > 0 && r.status !== 'cancelada' && (
                         <div className="mb-3 px-3 py-2 rounded-lg"
                           style={{ background: 'color-mix(in srgb, var(--color-accent) 8%, transparent)', border: '1px solid color-mix(in srgb, var(--color-accent) 20%, transparent)' }}>
-                          <p className="text-xs text-[var(--color-text-2)] mb-2">Morador solicitou isenção de taxa. Deseja deferir?</p>
+                          <p className="text-xs font-bold mb-1" style={{ color: 'var(--color-accent)' }}>Solicitação de isenção pendente</p>
+                          <p className="text-xs mb-2" style={{ color: 'var(--color-text-3)' }}>
+                            Pode confirmar a reserva e decidir a isenção de forma independente.
+                          </p>
                           <div className="flex gap-2">
                             <button onClick={() => decideExemption(r.id, true)} disabled={saving === r.id}
                               className="flex-1 py-1.5 rounded-lg text-xs font-bold"
                               style={{ background: 'color-mix(in srgb, var(--color-success) 15%, transparent)', color: 'var(--color-success)' }}>
-                              Deferir isenção
+                              ✓ Deferir isenção
                             </button>
                             <button onClick={() => decideExemption(r.id, false)} disabled={saving === r.id}
                               className="flex-1 py-1.5 rounded-lg text-xs font-bold"
                               style={{ background: 'color-mix(in srgb, var(--color-danger) 15%, transparent)', color: 'var(--color-danger)' }}>
-                              Negar isenção
+                              ✕ Negar isenção
                             </button>
                           </div>
                         </div>
