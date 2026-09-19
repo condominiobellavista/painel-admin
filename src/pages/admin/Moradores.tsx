@@ -27,9 +27,9 @@ const STATUS_COLOR = {
 }
 
 const DEMO_RESIDENTS: (Resident & { unit_number: string })[] = [
-  { id: '1', unit_id: 'u1', unit_number: '101', role: 'proprietario_morador', full_name: 'Luis Carlos Minicovski', birth_date: '28/12/1984', cpf: null, phone: '(47) 99768-9000', email: 'luis.minicovski@gmail.com', access_code: '531368', lgpd_consent: true, status: 'aprovado', notes: null, created_at: '' },
-  { id: '2', unit_id: 'u2', unit_number: '501', role: 'inquilino', full_name: 'RENAN', birth_date: '19/06/1989', cpf: null, phone: '(67) 99687-7968', email: 'Rocharenan@hotmail.com', access_code: '984744', lgpd_consent: true, status: 'aprovado', notes: '⚠️ REVISAR: código de acesso duplicado — mesmo código da proprietária Miranda Bail (984744). Atribuir código exclusivo para um dos dois.', created_at: '' },
-  { id: '3', unit_id: 'u2', unit_number: '501', role: 'proprietario_nao_morador', full_name: 'MIRANDA BAIL', birth_date: '27/06/1984', cpf: null, phone: '(47) 99116-9122', email: 'mirandabail@yahoo.com.br', access_code: '984744', lgpd_consent: true, status: 'aprovado', notes: '⚠️ REVISAR: código de acesso duplicado — mesmo código do inquilino Renan (984744). Atribuir código exclusivo para um dos dois.', created_at: '' },
+  { id: '1', unit_id: 'u1', unit_number: '101', role: 'proprietario_morador', full_name: 'Demo Morador', birth_date: '01/01/1980', cpf: null, phone: '(47) 99000-0001', email: 'demo@example.com', access_code: '000001', lgpd_consent: true, status: 'aprovado', notes: null, created_at: '' },
+  { id: '2', unit_id: 'u2', unit_number: '501', role: 'inquilino', full_name: 'Demo Inquilino', birth_date: '01/01/1990', cpf: null, phone: '(47) 99000-0002', email: 'demo2@example.com', access_code: '000002', lgpd_consent: true, status: 'aprovado', notes: '⚠️ REVISAR: código de acesso duplicado — mesmo código da proprietária (000002). Atribuir código exclusivo para um dos dois.', created_at: '' },
+  { id: '3', unit_id: 'u2', unit_number: '501', role: 'proprietario_nao_morador', full_name: 'Demo Proprietária', birth_date: '01/01/1985', cpf: null, phone: '(47) 99000-0003', email: 'demo3@example.com', access_code: '000002', lgpd_consent: true, status: 'aprovado', notes: '⚠️ REVISAR: código de acesso duplicado — mesmo código do inquilino (000002). Atribuir código exclusivo para um dos dois.', created_at: '' },
 ]
 
 interface ResidentRow extends Resident {
