@@ -9,8 +9,10 @@ interface EmailOptions {
 export const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL ?? 'condominiobellavistasbs@gmail.com'
 
 export async function sendEmail(opts: EmailOptions) {
-  if (isDemo || !opts.to) return
-  await supabase.functions.invoke('send-notification', { body: opts })
+  console.log('[sendEmail] isDemo:', isDemo, 'to:', opts.to)
+  if (isDemo || !opts.to) { console.warn('[sendEmail] abortando — isDemo ou sem destinatário'); return }
+  const { data, error } = await supabase.functions.invoke('send-notification', { body: opts })
+  console.log('[sendEmail] resultado:', { data, error })
 }
 
 const BASE = `
