@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { CalendarRange, Plus, X, CheckCircle, PartyPopper, Truck, AlertTriangle } from 'lucide-react'
 import { supabase, isDemo } from '@/lib/supabase'
 import { useMorador } from '@/context/MoradorContext'
+import { sendEmail, ADMIN_EMAIL, emailAdminNovaReserva, emailAdminNovaMudanca, emailAdminDesistencia } from '@/lib/notifications'
 
 /* ── tipos ── */
 type SolicitacaoTipo = 'salao' | 'mudanca'
@@ -150,6 +151,7 @@ export default function MoradorReservas() {
           else setError('Erro ao solicitar reserva. Tente novamente.')
           return
         }
+        await sendEmail({ to: ADMIN_EMAIL, ...emailAdminNovaReserva({ nome: morador?.name ?? '', apto: morador?.unit ?? '', data: formatDate(date), hall, taxa: TAXA, isencao: exemption }) })
       } else { setSubmitting(false) }
     } else {
       if (!moveDate) { setError('Selecione uma data.'); return }
@@ -168,6 +170,7 @@ export default function MoradorReservas() {
           else setError('Erro ao solicitar mudança. Tente novamente.')
           return
         }
+        await sendEmail({ to: ADMIN_EMAIL, ...emailAdminNovaMudanca({ nome: morador?.name ?? '', apto: morador?.unit ?? '', data: formatDate(moveDate), tipo: moveType, periodo: period }) })
       } else { setSubmitting(false) }
     }
 
@@ -187,8 +190,10 @@ export default function MoradorReservas() {
     if (!isDemo) {
       if (item.kind === 'salao') {
         await supabase.rpc('morador_cancel_reservation', { p_code: code, p_id: id })
+        await sendEmail({ to: ADMIN_EMAIL, ...emailAdminDesistencia({ nome: morador?.name ?? '', apto: morador?.unit ?? '', data: formatDate(item.use_date), tipo: 'salao', hall: item.hall }) })
       } else {
         await supabase.rpc('morador_cancel_move', { p_code: code, p_id: id })
+        await sendEmail({ to: ADMIN_EMAIL, ...emailAdminDesistencia({ nome: morador?.name ?? '', apto: morador?.unit ?? '', data: formatDate(item.move_date), tipo: 'mudanca' }) })
       }
     }
     setItems(prev => prev.map(i => i.id === id ? { ...i, status: 'cancelada' } : i))
