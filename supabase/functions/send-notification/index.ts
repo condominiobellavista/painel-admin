@@ -1,12 +1,12 @@
 // Supabase Edge Function — send-notification
-// Chama a API do Resend para enviar e-mail ao solicitante quando uma
-// reserva ou mudança é confirmada, cancelada ou aprovada.
+// Envia e-mail via Gmail SMTP usando senha de app do Google.
 //
-// Variáveis necessárias no Supabase (Project > Settings > Edge Functions):
-//   RESEND_API_KEY  — chave da API em resend.com (plano gratuito: 3.000 e-mails/mês)
-//   FROM_EMAIL      — endereço remetente verificado no Resend (ex: noreply@bellavista.com.br)
+// Secrets necessários no Supabase (Project > Settings > Edge Functions > Secrets):
+//   GMAIL_USER      — ex: condominiobellavistasbs@gmail.com
+//   GMAIL_APP_PASS  — senha de app de 16 caracteres (sem espaços)
 
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
+import { SmtpClient } from 'https://deno.land/x/denomailer@1.6.0/mod.ts'
 
 interface Payload {
   to: string
@@ -14,29 +14,38 @@ interface Payload {
   html: string
 }
 
+const CORS = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, content-type',
+}
+
 serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'authorization, content-type' } })
+  if (req.method === 'OPTIONS') return new Response('ok', { headers: CORS })
+
+  try {
+    const { to, subject, html }: Payload = await req.json()
+
+    const user = Deno.env.get('GMAIL_USER')
+    const pass = Deno.env.get('GMAIL_APP_PASS')
+
+    if (!user || !pass) {
+      return new Response(JSON.stringify({ error: 'GMAIL_USER ou GMAIL_APP_PASS não configurados' }), { status: 500, headers: CORS })
+    }
+
+    const client = new SmtpClient()
+    await client.connectTLS({ hostname: 'smtp.gmail.com', port: 465, username: user, password: pass })
+
+    await client.send({
+      from: `Condomínio Bella Vista <${user}>`,
+      to,
+      subject,
+      html,
+    })
+
+    await client.close()
+
+    return new Response(JSON.stringify({ ok: true }), { status: 200, headers: { ...CORS, 'Content-Type': 'application/json' } })
+  } catch (err) {
+    return new Response(JSON.stringify({ error: String(err) }), { status: 500, headers: { ...CORS, 'Content-Type': 'application/json' } })
   }
-
-  const { to, subject, html }: Payload = await req.json()
-
-  const apiKey = Deno.env.get('RESEND_API_KEY')
-  const from = Deno.env.get('FROM_EMAIL') ?? 'Bella Vista <noreply@bellavista.com.br>'
-
-  if (!apiKey) {
-    return new Response(JSON.stringify({ error: 'RESEND_API_KEY não configurada' }), { status: 500 })
-  }
-
-  const res = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ from, to, subject, html }),
-  })
-
-  const data = await res.json()
-  return new Response(JSON.stringify(data), {
-    status: res.ok ? 200 : 500,
-    headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
-  })
 })
