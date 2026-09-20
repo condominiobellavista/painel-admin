@@ -9,7 +9,7 @@ interface Staff {
   phone: string | null
   email: string | null
   access_code: string | null
-  status: 'ativo' | 'inativo'
+  status: 'aprovado' | 'inativo'
 }
 
 const ROLES = [
@@ -22,12 +22,12 @@ const ROLES = [
 ]
 
 const DEMO_STAFF: Staff[] = [
-  { id: '1', full_name: 'Carlos Zelador', role: 'zelador', phone: '(47) 99000-0001', email: null, access_code: '000010', status: 'ativo' },
-  { id: '2', full_name: 'Maria Faxineira', role: 'faxineiro', phone: '(47) 99000-0002', email: null, access_code: '000011', status: 'ativo' },
+  { id: '1', full_name: 'Carlos Zelador', role: 'zelador', phone: '(47) 99000-0001', email: null, access_code: '000010', status: 'aprovado' },
+  { id: '2', full_name: 'Maria Faxineira', role: 'faxineiro', phone: '(47) 99000-0002', email: null, access_code: '000011', status: 'aprovado' },
   { id: '3', full_name: 'João Leiturista', role: 'leiturista', phone: null, email: null, access_code: null, status: 'inativo' },
 ]
 
-const blank: Omit<Staff, 'id'> = { full_name: '', role: 'zelador', phone: '', email: '', access_code: '', status: 'ativo' }
+const blank: Omit<Staff, 'id'> = { full_name: '', role: 'zelador', phone: '', email: '', access_code: '', status: 'aprovado' }
 
 export default function AdminZeladoria() {
   const [staff, setStaff] = useState<Staff[]>([])
@@ -85,7 +85,7 @@ export default function AdminZeladoria() {
   }
 
   async function toggleStatus(s: Staff) {
-    const newStatus = s.status === 'ativo' ? 'inativo' : 'ativo'
+    const newStatus = s.status === 'aprovado' ? 'inativo' : 'aprovado'
     if (!isDemo) await supabase.from('building_staff').update({ status: newStatus }).eq('id', s.id)
     setStaff(prev => prev.map(x => x.id === s.id ? { ...x, status: newStatus } : x))
   }
@@ -96,7 +96,7 @@ export default function AdminZeladoria() {
     setDeleteId(null)
   }
 
-  const activeStaff = staff.filter(s => s.status === 'ativo')
+  const activeStaff = staff.filter(s => s.status === 'aprovado')
   const inactiveStaff = staff.filter(s => s.status === 'inativo')
 
   if (loading) return <div className="text-sm text-[var(--color-text-3)] p-4">Carregando zeladoria...</div>
@@ -189,9 +189,9 @@ export default function AdminZeladoria() {
                   </div>
                 </div>
                 <div className="flex items-center gap-1.5 flex-shrink-0">
-                  <button onClick={() => toggleStatus(s)} title={s.status === 'ativo' ? 'Inativar' : 'Ativar'}
+                  <button onClick={() => toggleStatus(s)} title={s.status === 'aprovado' ? 'Inativar' : 'Ativar'}
                     className="w-7 h-7 rounded-lg flex items-center justify-center transition hover:opacity-80"
-                    style={{ background: s.status === 'ativo' ? 'color-mix(in srgb, var(--color-success) 12%, transparent)' : 'color-mix(in srgb, var(--color-text-3) 12%, transparent)', color: s.status === 'ativo' ? 'var(--color-success)' : 'var(--color-text-3)' }}>
+                    style={{ background: s.status === 'aprovado' ? 'color-mix(in srgb, var(--color-success) 12%, transparent)' : 'color-mix(in srgb, var(--color-text-3) 12%, transparent)', color: s.status === 'aprovado' ? 'var(--color-success)' : 'var(--color-text-3)' }}>
                     <Check size={13} />
                   </button>
                   <button onClick={() => startEdit(s)} title="Editar"

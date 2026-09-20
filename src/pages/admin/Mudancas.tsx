@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react'
 import { ChevronDown, ChevronUp, CheckCircle, XCircle, Search } from 'lucide-react'
 import { supabase, isDemo } from '@/lib/supabase'
+import { sendEmail, emailMudancaAprovada, emailMudancaCancelada } from '@/lib/notifications'
 
 interface MoveRequest {
   id: string
   unit_number: string
   resident_name: string
+  email?: string
   type: 'entrada' | 'saida'
   move_date: string
   period: 'manha' | 'tarde'
@@ -50,8 +52,20 @@ export default function AdminMudancas() {
 
   async function updateStatus(id: string, newStatus: 'aprovada' | 'cancelada') {
     setSaving(id)
+    const m = moves.find(x => x.id === id)
     if (!isDemo) await supabase.from('move_requests').update({ status: newStatus }).eq('id', id)
-    setMoves(prev => prev.map(m => m.id === id ? { ...m, status: newStatus } : m))
+    setMoves(prev => prev.map(x => x.id === id ? { ...x, status: newStatus } : x))
+    if (m?.email) {
+      const data = m.move_date.split('-')
+      const dateStr = `${data[2]}/${data[1]}/${data[0]}`
+      if (newStatus === 'aprovada') {
+        const tpl = emailMudancaAprovada({ nome: m.resident_name, apto: m.unit_number, data: dateStr, tipo: m.type, periodo: m.period })
+        await sendEmail({ to: m.email, ...tpl })
+      } else {
+        const tpl = emailMudancaCancelada({ nome: m.resident_name, apto: m.unit_number, data: dateStr })
+        await sendEmail({ to: m.email, ...tpl })
+      }
+    }
     setSaving(null)
   }
 
