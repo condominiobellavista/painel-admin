@@ -40,23 +40,19 @@ export function MoradorProvider({ children }: { children: ReactNode }) {
 
     setLoading(true)
     const { data, error } = await supabase
-      .from('residents')
-      .select('id, full_name, unit_id, role, email, phone, cpf, birth_date, units(number)')
-      .eq('access_code', inputCode.trim())
-      .eq('status', 'aprovado')
-      .maybeSingle()
+      .rpc('morador_login', { p_code: inputCode.trim() })
     setLoading(false)
 
     if (error) return 'Erro ao verificar o código. Tente novamente.'
-    if (!data) return 'Código não encontrado ou acesso não aprovado.'
+    if (!data || (data as any[]).length === 0) return 'Código não encontrado ou acesso não aprovado.'
 
-    const d = data as any
+    const d = (data as any[])[0]
     setCode(inputCode.trim())
     setMorador({
       id: d.id,
       unit_id: d.unit_id,
       name: d.full_name,
-      unit: d.units?.number ?? '',
+      unit: d.unit_number ?? '',
       role: d.role,
       email: d.email ?? undefined,
       phone: d.phone ?? undefined,
