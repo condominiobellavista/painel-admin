@@ -9,6 +9,8 @@ export interface MoradorProfile {
   role: string
   email?: string
   phone?: string
+  cpf?: string
+  birth_date?: string
 }
 
 interface MoradorState {
@@ -39,7 +41,7 @@ export function MoradorProvider({ children }: { children: ReactNode }) {
     setLoading(true)
     const { data, error } = await supabase
       .from('residents')
-      .select('id, full_name, unit_id, role, email, phone, units(number)')
+      .select('id, full_name, unit_id, role, email, phone, cpf, birth_date, units(number)')
       .eq('access_code', inputCode.trim())
       .eq('status', 'aprovado')
       .maybeSingle()
@@ -58,6 +60,8 @@ export function MoradorProvider({ children }: { children: ReactNode }) {
       role: d.role,
       email: d.email ?? undefined,
       phone: d.phone ?? undefined,
+      cpf: d.cpf ?? undefined,
+      birth_date: d.birth_date ?? undefined,
     })
     return null
   }
