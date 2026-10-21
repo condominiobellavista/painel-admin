@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Search, Plus, AlertTriangle, X } from 'lucide-react'
+import { Search, Plus, AlertTriangle, X, ArrowUpDown } from 'lucide-react'
 import { supabase, isDemo } from '@/lib/supabase'
 import type { Resident, ResidentRole } from '@/types'
 
@@ -40,6 +40,7 @@ export default function Moradores() {
   const [residents, setResidents] = useState<ResidentRow[]>([])
   const [loading, setLoading] = useState(true)
   const [busca, setBusca] = useState('')
+  const [sortBy, setSortBy] = useState<'nome' | 'unidade'>('nome')
   const [alertNote, setAlertNote] = useState<string | null>(null)
 
   useEffect(() => {
@@ -61,14 +62,20 @@ export default function Moradores() {
     load()
   }, [])
 
-  const filtered = residents.filter(r => {
-    const q = busca.toLowerCase()
-    return (
-      r.full_name.toLowerCase().includes(q) ||
-      r.unit_number.includes(q) ||
-      (r.phone ?? '').includes(q)
+  const filtered = residents
+    .filter(r => {
+      const q = busca.toLowerCase()
+      return (
+        r.full_name.toLowerCase().includes(q) ||
+        r.unit_number.includes(q) ||
+        (r.phone ?? '').includes(q)
+      )
+    })
+    .sort((a, b) =>
+      sortBy === 'nome'
+        ? a.full_name.localeCompare(b.full_name, 'pt-BR')
+        : a.unit_number.localeCompare(b.unit_number, 'pt-BR', { numeric: true }) || a.full_name.localeCompare(b.full_name, 'pt-BR')
     )
-  })
 
   const alertCount = residents.filter(r => r.notes).length
 
@@ -90,14 +97,25 @@ export default function Moradores() {
         </button>
       </div>
 
-      <div className="relative mb-4">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--color-text-3)]" />
-        <input
-          value={busca}
-          onChange={e => setBusca(e.target.value)}
-          placeholder="Buscar por nome, apto, telefone..."
-          className="w-full pl-10 pr-4 py-2.5 bg-[var(--color-card)] border border-[var(--color-border-1)] rounded-lg text-sm text-[var(--color-text-1)] placeholder:text-[var(--color-text-3)] focus:outline-none focus:border-[var(--color-accent)] transition"
-        />
+      <div className="flex gap-2 mb-4">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--color-text-3)]" />
+          <input
+            value={busca}
+            onChange={e => setBusca(e.target.value)}
+            placeholder="Buscar por nome, apto, telefone..."
+            className="w-full pl-10 pr-4 py-2.5 bg-[var(--color-card)] border border-[var(--color-border-1)] rounded-lg text-sm text-[var(--color-text-1)] placeholder:text-[var(--color-text-3)] focus:outline-none focus:border-[var(--color-accent)] transition"
+          />
+        </div>
+        <button
+          onClick={() => setSortBy(s => s === 'nome' ? 'unidade' : 'nome')}
+          className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold border transition flex-shrink-0"
+          style={{ background: 'var(--color-card)', borderColor: 'var(--color-border-1)', color: 'var(--color-text-2)' }}
+          title="Alternar ordenação"
+        >
+          <ArrowUpDown size={13} />
+          {sortBy === 'nome' ? 'A–Z' : 'Unidade'}
+        </button>
       </div>
 
       {loading ? (
