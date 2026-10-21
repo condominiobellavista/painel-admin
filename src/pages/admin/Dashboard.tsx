@@ -55,8 +55,8 @@ export default function Dashboard() {
     }
     Promise.all([
       supabase.from('residents').select('id', { count: 'exact', head: true }).eq('status', 'aprovado'),
-      supabase.from('vehicles').select('id', { count: 'exact', head: true }).eq('status', 'aprovado'),
-      supabase.from('service_providers').select('id', { count: 'exact', head: true }).eq('status', 'aprovado'),
+      supabase.from('vehicles').select('id', { count: 'exact', head: true }).eq('status', 'ativo'),
+      supabase.from('service_providers').select('id', { count: 'exact', head: true }).eq('status', 'ativo'),
       supabase.from('reservations').select('id', { count: 'exact', head: true }).eq('status', 'pendente'),
       supabase.from('units').select('id', { count: 'exact', head: true }).eq('is_delinquent', true),
       supabase.from('building_staff').select('id', { count: 'exact', head: true }).eq('status', 'aprovado'),
